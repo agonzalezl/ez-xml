@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "ez-xml"
+version = "0.1.0"
+description = ""
+authors = ["agonzalezl <angel.gonzalez.lpz@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ez"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+lxml = "^4.9.2"
+black = "*"
+coverage = "*"
+freezegun = "*"
+mypy = "*"
+pre-commit = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-django = "*"
+ruff = "*"
+tox = "*"
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
