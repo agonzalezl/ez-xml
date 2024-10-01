@@ -39,7 +39,7 @@ class Seller(EzXMLModel):
     balance: Balance
 
 
-def test_dummy():
+def test_model():
     thing = Seller(
         Name="John Doe",
         address=Address(Country="USA", province=Province("New York", code="NY")),
@@ -56,4 +56,32 @@ def test_dummy():
         "</cdc:Address>"
         '<cdc:Balance currency="EUR">33</cdc:Balance>'
         "</Seller>"
+    )
+
+
+@nsmap(
+    {
+        "cdc": "http://www.cdc.com/schema",
+        "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    }
+)
+@dataclasses.dataclass()
+class SellerOptional(EzXMLModel):
+    Name: str = EzField(ns="xsi")
+    address: Address | None = None
+    balance: Balance | None = None
+
+
+def test_optional():
+    thing = SellerOptional(
+        Name="John Doe",
+        balance=Balance(value="33", currency="EUR"),
+    ).build()
+
+    assert (
+        etree.tostring(thing, encoding="unicode")
+        == '<SellerOptional xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        "<xsi:Name>John Doe</xsi:Name>"
+        '<cdc:Balance currency="EUR">33</cdc:Balance>'
+        "</SellerOptional>"
     )
