@@ -1,4 +1,4 @@
-from ez.ubl._invoice import Invoice
+from ez.ubl._invoice import Invoice, OrderReference
 from lxml import etree
 
 
@@ -7,6 +7,12 @@ def test_invoice_build():
         ID="12345",
         IssueDate="2017-12-01",
         Note="Note",
+        OrderReference=OrderReference(
+            ID="1111111111",
+            SalesOrderID="aaaaaaaaa",
+            UUID="2222222",
+            IssueDate="2017-12-01",
+        ),
     ).build()
 
     assert (
@@ -15,5 +21,11 @@ def test_invoice_build():
         "<cbc:ID>12345</cbc:ID>"
         "<cbc:IssueDate>2017-12-01</cbc:IssueDate>"
         "<cbc:Note>Note</cbc:Note>"
+        "<cac:OrderReference>"
+        "<cbc:ID>1111111111</cbc:ID>"
+        "<cbc:SalesOrderID>aaaaaaaaa</cbc:SalesOrderID>"
+        "<cbc:UUID>2222222</cbc:UUID>"
+        "<cbc:IssueDate>2017-12-01</cbc:IssueDate>"
+        "</cac:OrderReference>"
         "</Invoice>"
     )
