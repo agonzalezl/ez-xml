@@ -27,7 +27,7 @@ class Balance(EzXMLModel):
 
 
 @nsmap(
-    nsmap={
+    {
         "cdc": "http://www.cdc.com/schema",
         "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     }
