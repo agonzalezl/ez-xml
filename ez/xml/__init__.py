@@ -1,3 +1,3 @@
-from .model import EzXMLModel
+from .model import EzXMLModel, nsmap, EzField
 
-__all__ = ["EzXMLModel"]
+__all__ = ["EzXMLModel", "nsmap", "EzField"]
