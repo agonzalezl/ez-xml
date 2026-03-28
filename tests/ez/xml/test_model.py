@@ -26,6 +26,35 @@ class Balance(EzXMLModel):
     currency: str = EzField(type="attribute")
 
 
+@dataclasses.dataclass()
+class LineItem(EzXMLModel):
+    _ns = "cdc"
+    SKU: str = EzField("cdc")
+
+
+@nsmap(
+    {
+        "cdc": "http://www.cdc.com/schema",
+        "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    }
+)
+@dataclasses.dataclass()
+class Order(EzXMLModel):
+    lines: list[LineItem] = dataclasses.field(default_factory=list)
+
+
+def test_list_of_models():
+    thing = Order(lines=[LineItem(SKU="A1"), LineItem(SKU="B2")]).build()
+
+    assert (
+        etree.tostring(thing, encoding="unicode")
+        == '<Order xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        "<cdc:LineItem><cdc:SKU>A1</cdc:SKU></cdc:LineItem>"
+        "<cdc:LineItem><cdc:SKU>B2</cdc:SKU></cdc:LineItem>"
+        "</Order>"
+    )
+
+
 @nsmap(
     {
         "cdc": "http://www.cdc.com/schema",

@@ -39,6 +39,16 @@ class EzXMLModel:
 
             field_type = _cleanup_field_type(field.type)
 
+            # Support for lists
+            if get_origin(field_type) is list:
+                args = get_args(field_type)
+                if args:
+                    item_type = _cleanup_field_type(args[0])
+                    if isinstance(item_type, type) and issubclass(item_type, EzXMLModel):
+                        for item in value:
+                            children.append(item.build(nsmap))
+                        continue
+
             if issubclass(field_type, EzXMLModel):
                 children.append(value.build(nsmap))
             elif field.name == "value":
@@ -50,9 +60,9 @@ class EzXMLModel:
                 sub_ns = "{" + nsmap.get(sub_ns) + "}" if sub_ns else ""
                 children.append(getattr(E, sub_ns + field.name)(str(value)))
 
-            _ns = getattr(self, "_ns", None)
+        _ns = getattr(self, "_ns", None)
 
-            _ns = "{" + nsmap.get(_ns) + "}" if _ns else ""
+        _ns = "{" + nsmap.get(_ns) + "}" if _ns else ""
 
         return getattr(E, _ns + type(self).__name__)(*children, **attributes)
 
