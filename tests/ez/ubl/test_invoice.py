@@ -154,7 +154,7 @@ def test_invoice_build_optional():
 def test_invoice_build_validates_against_ubl_xsd():
     this_folder_path = Path(__file__).resolve().parents[0]
     invoice_xsd = (
-        this_folder_path /"schemas" / "xsd" / "maindoc" / "UBL-Invoice-2.1.xsd"
+        this_folder_path / "schemas" / "xsd" / "maindoc" / "UBL-Invoice-2.1.xsd"
     )
 
     schema_doc = etree.parse(str(invoice_xsd))
