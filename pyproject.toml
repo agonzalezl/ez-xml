@@ -1,29 +1,39 @@
-[tool.poetry]
+[project]
 name = "ez-xml"
 version = "0.1.0"
 description = ""
-authors = ["agonzalezl <angel.gonzalez.lpz@gmail.com>"]
+authors = [{ name = "agonzalezl", email = "angel.gonzalez.lpz@gmail.com" }]
+requires-python = ">=3.11,<4"
 readme = "README.md"
-packages = [{include = "ez"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-lxml = "^6.1.0"
-black = "*"
-coverage = "*"
-freezegun = "*"
-mypy = "*"
-pre-commit = "*"
-pytest = "*"
-pytest-cov = "*"
-pytest-django = "*"
-ruff = "^0.15.12"
-tox = "*"
+dependencies = [
+    "lxml>=6.1.0,<7",
+]
 
+[dependency-groups]
+dev = [
+    "black",
+    "coverage",
+    "mypy",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "ruff>=0.15.12,<0.16",
+]
 
-[tool.poetry.dev-dependencies]
-pytest = "^7.3.2"
+[tool.uv]
+
+[tool.uv.build-backend]
+module-name = ["ez"]
+module-root = ""
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.11.7,<0.12.0"]
+build-backend = "uv_build"
