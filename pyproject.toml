@@ -8,7 +8,7 @@ packages = [{include = "ez"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-lxml = "^4.9.2"
+lxml = "^6.1.0"
 black = "*"
 coverage = "*"
 freezegun = "*"
@@ -17,7 +17,7 @@ pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-django = "*"
-ruff = "*"
+ruff = "^0.15.12"
 tox = "*"
 
 
