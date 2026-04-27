@@ -1,9 +1,9 @@
 from lxml.builder import ElementMaker
 import dataclasses
 from typing import Any
-from typing import Optional
 from types import NoneType, UnionType
 from typing import get_args, get_origin
+import lxml.etree
 
 
 def nsmap(nsmap):
@@ -23,7 +23,7 @@ def nsmap(nsmap):
 
 @dataclasses.dataclass()
 class EzXMLModel:
-    def build(self, nsmap: dict | None = None) -> str:
+    def build(self, nsmap: dict | None = None) -> lxml.etree._Element:
         nsmap = nsmap or self.nsmap
         E = ElementMaker(nsmap=nsmap)
 
@@ -44,7 +44,9 @@ class EzXMLModel:
                 args = get_args(field_type)
                 if args:
                     item_type = _cleanup_field_type(args[0])
-                    if isinstance(item_type, type) and issubclass(item_type, EzXMLModel):
+                    if isinstance(item_type, type) and issubclass(
+                        item_type, EzXMLModel
+                    ):
                         for item in value:
                             children.append(item.build(nsmap))
                         continue
@@ -60,9 +62,9 @@ class EzXMLModel:
                 sub_ns = "{" + nsmap.get(sub_ns) + "}" if sub_ns else ""
                 children.append(getattr(E, sub_ns + field.name)(str(value)))
 
-        _ns = getattr(self, "_ns", None)
-
-        _ns = "{" + nsmap.get(_ns) + "}" if _ns else ""
+        _ns_key = getattr(self, "_ns", None)
+        _ns = nsmap.get(_ns_key, None)
+        _ns = "{" + _ns + "}" if _ns else ""
 
         return getattr(E, _ns + type(self).__name__)(*children, **attributes)
 
