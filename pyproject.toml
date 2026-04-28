@@ -1,5 +1,5 @@
 [project]
-name = "ez-xml"
+name = "ezxml"
 version = "0.1.0"
 description = ""
 authors = [{ name = "agonzalezl", email = "angel.gonzalez.lpz@gmail.com" }]
@@ -29,6 +29,17 @@ dev = [
 ]
 
 [tool.uv]
+
+[tool.mypy]
+python_version = "3.11"
+
+[[tool.mypy.overrides]]
+module = "lxml.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "lxml"
+ignore_missing_imports = true
 
 [tool.uv.build-backend]
 module-name = ["ez"]

@@ -28,3 +28,59 @@ def main():
     print(etree.tostring(xml, encoding="unicode"))
     >>> '<Seller><name>John Doe</name><Address><country>USA</country></Address></Seller>'
 ```
+
+
+# UBL 2.1 Support
+
+`ez-xml` includes pre-built support for the [OASIS UBL 2.1](https://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.html) invoice specification. The `ez.ubl` module provides ready-to-use classes for generating UBL Invoice documents.
+
+## Example
+
+```python
+from ez.ubl import (
+    Invoice, InvoiceLine, OrderReference, AccountingSupplierParty,
+    AccountingCustomerParty, LegalMonetaryTotal, Party, PartyName,
+    PayableAmount, LineExtensionAmount, Item, TaxTotal, TaxSubtotal,
+    TaxCategory, TaxScheme, TaxAmount
+)
+
+invoice = Invoice(
+    ID="INV-001",
+    IssueDate="2024-01-15",
+    AccountingSupplierParty=AccountingSupplierParty(
+        Party=Party(PartyName=PartyName(Name="ACME Corp"))
+    ),
+    AccountingCustomerParty=AccountingCustomerParty(
+        Party=Party(PartyName=PartyName(Name="Client Inc"))
+    ),
+    TaxTotal=[
+        TaxTotal(
+            TaxAmount=TaxAmount(value="20.00", currencyID="EUR"),
+            TaxSubtotal=[
+                TaxSubtotal(
+                    TaxableAmount=TaxAmount(value="100.00", currencyID="EUR"),
+                    TaxAmount=TaxAmount(value="20.00", currencyID="EUR"),
+                    TaxCategory=TaxCategory(
+                        ID="S", Percent="20",
+                        TaxScheme=TaxScheme(ID="VAT")
+                    )
+                )
+            ]
+        )
+    ],
+    LegalMonetaryTotal=LegalMonetaryTotal(
+        PayableAmount=PayableAmount(value="120.00", currencyID="EUR")
+    ),
+    invoiceLine=[
+        InvoiceLine(
+            ID="1",
+            LineExtensionAmount=LineExtensionAmount(value="100.00", currencyID="EUR"),
+            Item=Item(Description="Service A")
+        )
+    ],
+)
+
+xml = invoice.build()
+```
+
+The generated XML is fully compliant with the UBL 2.1 XSD schema and can be validated against the official OASIS specification.
