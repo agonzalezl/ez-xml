@@ -1,19 +1,18 @@
+from __future__ import annotations
 from lxml.builder import ElementMaker
 import dataclasses
-from typing import Any
-from types import NoneType, UnionType
-from typing import get_args, get_origin
+from typing import Any, ClassVar, get_args, get_origin, get_type_hints, Union
+from types import UnionType
 import lxml.etree
 
 
 def nsmap(nsmap):
     def decorator(cls):
-        # Inject nsmap as an attribute when the class is instantiated
         original_init = cls.__init__
 
         def new_init(self, *args, **kwargs):
             original_init(self, *args, **kwargs)
-            self.nsmap = nsmap  # Inject nsmap into the instance
+            self.nsmap = nsmap
 
         cls.__init__ = new_init
         return cls
@@ -23,6 +22,8 @@ def nsmap(nsmap):
 
 @dataclasses.dataclass()
 class EzXMLModel:
+    nsmap: ClassVar[dict | None] = None
+
     def build(self, nsmap: dict | None = None) -> lxml.etree._Element:
         nsmap = nsmap or self.nsmap
         E = ElementMaker(nsmap=nsmap)
@@ -31,15 +32,17 @@ class EzXMLModel:
 
         attributes = {}
 
+        hints = get_type_hints(self.__class__)
+
         for field in dataclasses.fields(self):
             value = getattr(self, field.name)
 
             if value is None:
                 continue
 
-            field_type = _cleanup_field_type(field.type)
+            field_type = hints.get(field.name, field.type)
+            field_type = _cleanup_field_type(field_type)
 
-            # Support for lists
             if get_origin(field_type) is list:
                 args = get_args(field_type)
                 if args:
@@ -51,7 +54,7 @@ class EzXMLModel:
                             children.append(item.build(nsmap))
                         continue
 
-            if issubclass(field_type, EzXMLModel):
+            if isinstance(field_type, type) and issubclass(field_type, EzXMLModel):
                 children.append(value.build(nsmap))
             elif field.name == "value":
                 children.append(str(value))
@@ -59,26 +62,33 @@ class EzXMLModel:
                 attributes[field.name] = str(value)
             else:
                 sub_ns = field.metadata.get("_ns", None) if field.metadata else None
-                sub_ns = "{" + nsmap.get(sub_ns) + "}" if sub_ns else ""
+                if ns := (nsmap or {}).get(sub_ns):
+                    sub_ns = "{" + ns + "}"
+                else:
+                    sub_ns = ""
                 children.append(getattr(E, sub_ns + field.name)(str(value)))
 
         _ns_key = getattr(self, "_ns", None)
-        _ns = nsmap.get(_ns_key, None)
+        _ns = (nsmap or {}).get(_ns_key, None)
         _ns = "{" + _ns + "}" if _ns else ""
 
         return getattr(E, _ns + type(self).__name__)(*children, **attributes)
 
 
 def _cleanup_field_type(field_type: Any):
-    if not type(field_type) == UnionType:
+    if isinstance(field_type, str):
+        return field_type
+    if not isinstance(field_type, UnionType):
         return field_type
 
     type_list = list(get_args(field_type))
-    if NoneType in type_list:
-        type_list.remove(NoneType)
-    # TODO: raise exception if more than 1 types
-
-    return type_list[0]
+    if None in type_list:
+        type_list.remove(None)
+    if len(type_list) == 1:
+        return type_list[0]
+    if len(type_list) > 1:
+        return type_list[0]
+    return field_type
 
 
 def EzField(ns: str | None = None, type: str | None = None, **kwargs: Any):
