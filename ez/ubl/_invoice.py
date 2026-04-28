@@ -541,4 +541,4 @@ class Invoice(EzXMLModel):
     TaxTotal: list[TaxTotal] | None = None
     WithholdingTaxTotal: list[WithholdingTaxTotal] | None = None
     LegalMonetaryTotal: LegalMonetaryTotal
-    invoiceLine: list[InvoiceLine]
+    InvoiceLines: list[InvoiceLine]

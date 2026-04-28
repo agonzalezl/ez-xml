@@ -77,7 +77,7 @@ def test_invoice_build():
         LegalMonetaryTotal=LegalMonetaryTotal(
             PayableAmount=PayableAmount(value="120.00", currencyID="EUR")
         ),
-        invoiceLine=[
+        InvoiceLines=[
             InvoiceLine(
                 ID="123",
                 LineExtensionAmount=LineExtensionAmount(
@@ -156,7 +156,7 @@ def test_invoice_build_with_party_details():
         LegalMonetaryTotal=LegalMonetaryTotal(
             PayableAmount=PayableAmount(value="100.00", currencyID="EUR")
         ),
-        invoiceLine=[
+        InvoiceLines=[
             InvoiceLine(
                 ID="1",
                 LineExtensionAmount=LineExtensionAmount(
@@ -200,7 +200,7 @@ def test_invoice_build_with_delivery():
         LegalMonetaryTotal=LegalMonetaryTotal(
             PayableAmount=PayableAmount(value="100.00", currencyID="EUR")
         ),
-        invoiceLine=[
+        InvoiceLines=[
             InvoiceLine(
                 ID="1",
                 LineExtensionAmount=LineExtensionAmount(
@@ -237,7 +237,7 @@ def test_invoice_build_with_allowance_charge():
         LegalMonetaryTotal=LegalMonetaryTotal(
             PayableAmount=PayableAmount(value="110.00", currencyID="EUR")
         ),
-        invoiceLine=[
+        InvoiceLines=[
             InvoiceLine(
                 ID="1",
                 LineExtensionAmount=LineExtensionAmount(
@@ -274,7 +274,7 @@ def test_invoice_build_validates_against_ubl_xsd():
         LegalMonetaryTotal=LegalMonetaryTotal(
             PayableAmount=PayableAmount(value="100.00", currencyID="EUR")
         ),
-        invoiceLine=[
+        InvoiceLines=[
             InvoiceLine(
                 ID="1",
                 LineExtensionAmount=LineExtensionAmount(
