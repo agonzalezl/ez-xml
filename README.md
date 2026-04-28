@@ -71,7 +71,7 @@ invoice = Invoice(
     LegalMonetaryTotal=LegalMonetaryTotal(
         PayableAmount=PayableAmount(value="120.00", currencyID="EUR")
     ),
-    invoiceLine=[
+    InvoiceLine=[
         InvoiceLine(
             ID="1",
             LineExtensionAmount=LineExtensionAmount(value="100.00", currencyID="EUR"),
