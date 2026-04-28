@@ -1,10 +1,13 @@
 [project]
 name = "ezxml"
 version = "0.1.0"
-description = ""
+description = "A Python library for generating XML from Python objects using dataclasses, with built-in support for UBL 2.1 documents."
+keywords = ["xml", "ubl", "invoice", "dataclass", "lxml"]
 authors = [{ name = "agonzalezl", email = "angel.gonzalez.lpz@gmail.com" }]
 requires-python = ">=3.11,<4"
 readme = "README.md"
+license = { text = "MIT" }
+repository = "https://github.com/agonzalezl/ez-xml"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",

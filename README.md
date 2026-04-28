@@ -84,3 +84,19 @@ xml = invoice.build()
 ```
 
 The generated XML is fully compliant with the UBL 2.1 XSD schema and can be validated against the official OASIS specification.
+
+
+## Roadmap
+
+- UBL 2.1 Document Support
+  - CreditNote - Credit memo
+  - Order - Purchase order
+  - DespatchAdvice - Shipment notice
+
+- Peppol BIS Support
+  - Invoice - Update to Peppol BIS Billing 3.0
+  - CreditNote - Peppol BIS CreditNote
+  - Order - Peppol BIS Order
+
+- XML Parsing
+  - Implement parsing (XML → Python objects)
