@@ -21,21 +21,7 @@ from ez.ubl._invoice import (
     Address,
     Country,
     Delivery,
-    DeliveryTerms,
-    PaymentMeans,
-    PaymentTerms,
-    PrepaidPayment,
     AllowanceCharge,
-    DocumentReference,
-    BillingReference,
-    ProjectReference,
-    InvoicePeriod,
-    Signature,
-    PayeeParty,
-    BuyerCustomerParty,
-    SellerSupplierParty,
-    TaxRepresentativeParty,
-    TaxExchangeRate,
 )
 from lxml import etree
 from pathlib import Path
