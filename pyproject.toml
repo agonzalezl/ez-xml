@@ -18,6 +18,7 @@ classifiers = [
 
 dependencies = [
     "lxml>=6.1.0,<7",
+    "saxonche>=12.9.0,<13",
 ]
 
 [dependency-groups]
