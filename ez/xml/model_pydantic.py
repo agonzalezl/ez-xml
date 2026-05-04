@@ -1,7 +1,7 @@
 from __future__ import annotations
 from lxml.builder import ElementMaker
 import lxml.etree
-from typing import Any, ClassVar, get_args, get_origin, Union
+from typing import Any, ClassVar, get_args, get_origin
 from types import UnionType
 from pydantic import BaseModel, Field
 
@@ -42,14 +42,14 @@ class PydanticEzXMLModel(BaseModel):
 
     model_config = {"arbitrary_types_allowed": True}
 
-    def build(self, nsmap: dict | None = None, is_root: bool = True) -> lxml.etree._Element:
+    def build(self, nsmap: dict | None = None) -> lxml.etree._Element:
         nsmap = nsmap or self._nsmap
         E = ElementMaker(nsmap=nsmap)
 
         children = []
         attributes = {}
 
-        for field_name, field_info in self.model_fields.items():
+        for field_name, field_info in type(self).model_fields.items():
             value = getattr(self, field_name)
 
             if value is None:
@@ -70,13 +70,13 @@ class PydanticEzXMLModel(BaseModel):
                         item_type, (PydanticEzXMLModel,)
                     ):
                         for item in value:
-                            children.append(item.build(nsmap, is_root=False))
+                            children.append(item.build(nsmap))
                         continue
 
             if isinstance(field_type, type) and issubclass(
                 field_type, (PydanticEzXMLModel,)
             ):
-                children.append(value.build(nsmap, is_root=False))
+                children.append(value.build(nsmap))
             elif field_name == "value":
                 children.append(str(value))
             elif xml_attribute:
@@ -88,10 +88,7 @@ class PydanticEzXMLModel(BaseModel):
                     prefix = ""
                 children.append(getattr(E, prefix + field_name)(str(value)))
 
-        if is_root:
-            return getattr(E, type(self).__name__)(*children, **attributes)
-        else:
-            _ns_key = self._ns
-            _ns = (nsmap or {}).get(_ns_key, None)
-            _ns = "{" + _ns + "}" if _ns else ""
-            return getattr(E, _ns + type(self).__name__)(*children, **attributes)
+        _ns_key = self._ns
+        _ns = (nsmap or {}).get(_ns_key, None)
+        _ns = "{" + _ns + "}" if _ns else ""
+        return getattr(E, _ns + type(self).__name__)(*children, **attributes)

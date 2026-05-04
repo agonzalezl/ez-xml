@@ -21,21 +21,7 @@ from ez.ubl._invoice import (
     Address,
     Country,
     Delivery,
-    DeliveryTerms,
-    PaymentMeans,
-    PaymentTerms,
-    PrepaidPayment,
     AllowanceCharge,
-    DocumentReference,
-    BillingReference,
-    ProjectReference,
-    InvoicePeriod,
-    Signature,
-    PayeeParty,
-    BuyerCustomerParty,
-    SellerSupplierParty,
-    TaxRepresentativeParty,
-    TaxExchangeRate,
 )
 from lxml import etree
 from pathlib import Path
@@ -65,8 +51,8 @@ def test_invoice_build():
                 TaxAmount=TaxAmount(value="20.00", currencyID="EUR"),
                 TaxSubtotal=[
                     TaxSubtotal(
-                        TaxableAmount=TaxableAmount(value="100.00", currencyID="EUR"),
-                        TaxAmount=TaxAmount(value="20.00", currencyID="EUR"),
+                        taxableAmount=TaxableAmount(value="100.00", currencyID="EUR"),
+                        taxAmount=TaxAmount(value="20.00", currencyID="EUR"),
                         TaxCategory=TaxCategory(
                             ID="S", Percent="20", TaxScheme=TaxScheme(ID="VAT")
                         ),
@@ -80,17 +66,17 @@ def test_invoice_build():
         InvoiceLines=[
             InvoiceLine(
                 ID="123",
-                LineExtensionAmount=LineExtensionAmount(
+                lineExtensionAmount=LineExtensionAmount(
                     value="50.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service A"),
+                item=Item(Description="Service A"),
             ),
             InvoiceLine(
                 ID="456",
-                LineExtensionAmount=LineExtensionAmount(
+                lineExtensionAmount=LineExtensionAmount(
                     value="50.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service B"),
+                item=Item(Description="Service B"),
             ),
         ],
     ).build()
@@ -120,7 +106,7 @@ def test_invoice_build():
     assert "<cbc:Description>Service B</cbc:Description>" in xml
 
 
-def test_invoice_build_with_party_details():
+def test_invoice_build_withParty_details():
     invoice = Invoice(
         ID="12345",
         IssueDate="2017-12-01",
@@ -159,10 +145,10 @@ def test_invoice_build_with_party_details():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                LineExtensionAmount=LineExtensionAmount(
+                lineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service"),
+                item=Item(Description="Service"),
             )
         ],
     ).build()
@@ -203,10 +189,10 @@ def test_invoice_build_with_delivery():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                LineExtensionAmount=LineExtensionAmount(
+                lineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service"),
+                item=Item(Description="Service"),
             )
         ],
     ).build()
@@ -216,7 +202,7 @@ def test_invoice_build_with_delivery():
     assert "<cbc:ActualDeliveryDate>2017-12-05</cbc:ActualDeliveryDate>" in xml
 
 
-def test_invoice_build_with_allowance_charge():
+def test_invoice_build_with_allowanceCharge():
     invoice = Invoice(
         ID="12345",
         IssueDate="2017-12-01",
@@ -240,10 +226,10 @@ def test_invoice_build_with_allowance_charge():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                LineExtensionAmount=LineExtensionAmount(
+                lineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service"),
+                item=Item(Description="Service"),
             )
         ],
     ).build()
@@ -277,12 +263,16 @@ def test_invoice_build_validates_against_ubl_xsd():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                LineExtensionAmount=LineExtensionAmount(
+                lineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service"),
+                item=Item(Description="Service"),
             )
         ],
     ).build()
 
+    # We do this to avoid the following error. Assigning Invoice to the proper namespace should fix the issue
+    # Element 'Invoice': No matching global declaration available for the validation root.
+    xml_str = etree.tostring(invoice, encoding="unicode")
+    invoice = etree.fromstring(xml_str)
     schema.assertValid(invoice)

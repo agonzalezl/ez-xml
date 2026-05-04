@@ -56,10 +56,10 @@ def test_list_of_models():
 
     assert (
         etree.tostring(thing, encoding="unicode")
-        == '<Order xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        == '<cdc:Order xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
         "<cdc:LineItem><cdc:SKU>A1</cdc:SKU></cdc:LineItem>"
         "<cdc:LineItem><cdc:SKU>B2</cdc:SKU></cdc:LineItem>"
-        "</Order>"
+        "</cdc:Order>"
     )
 
 
@@ -83,20 +83,21 @@ def test_model():
 
     assert (
         etree.tostring(thing, encoding="unicode")
-        == '<Seller xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        == '<cdc:Seller xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
         "<xsi:Name>John Doe</xsi:Name>"
         "<cdc:Address>"
         "<xsi:Country>USA</xsi:Country>"
         '<cdc:Province code="NY">New York</cdc:Province>'
         "</cdc:Address>"
         '<cdc:Balance currency="EUR">33</cdc:Balance>'
-        "</Seller>"
+        "</cdc:Seller>"
     )
 
 
 class SellerOptional(PydanticEzXMLModel):
-    _ns = "cdc"
+    _ns = None
     _nsmap = {
+        None: "http://optional.namespace.com/",
         "cdc": "http://www.cdc.com/schema",
         "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     }
@@ -113,7 +114,7 @@ def test_optional():
 
     assert (
         etree.tostring(thing, encoding="unicode")
-        == '<SellerOptional xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+        == '<SellerOptional xmlns="http://optional.namespace.com/" xmlns:cdc="http://www.cdc.com/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
         "<xsi:Name>John Doe</xsi:Name>"
         '<cdc:Balance currency="EUR">33</cdc:Balance>'
         "</SellerOptional>"

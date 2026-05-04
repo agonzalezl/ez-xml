@@ -1,135 +1,125 @@
-from __future__ import annotations
-import dataclasses
-from ez.xml.model import EzXMLModel, nsmap, EzField
+from ez.xml.model_pydantic import PydanticEzXMLModel, EzField
 from ._constants import NS_MAP
 
 
-@dataclasses.dataclass()
-class OrderReference(EzXMLModel):
+class UblEntity(PydanticEzXMLModel):
+    _nsmap = NS_MAP
+
+
+class CacEntity(UblEntity):
     _ns = "cac"
+
+
+class CbcEntity(UblEntity):
+    _ns = "cbc"
+
+
+class PartyIdentification(CacEntity):
+    ID: str
+    schemeID: str | None = EzField(type="attribute")
+
+
+PartyIdentificationType = PartyIdentification
+
+
+class PayableAmount(CbcEntity):
+    value: str
+    currencyID: str = EzField(type="attribute")
+
+
+PayableAmountType = PayableAmount
+
+
+class OrderReference(CacEntity):
     ID: str = EzField("cbc")
     SalesOrderID: str = EzField("cbc")
     UUID: str = EzField("cbc")
     IssueDate: str = EzField("cbc")
 
 
-@dataclasses.dataclass()
-class PartyName(EzXMLModel):
-    _ns = "cac"
+OrderReferenceType = OrderReference
+
+
+class PartyLegalEntity(CacEntity):
+    RegistrationName: str | None = EzField("cbc", default=None)
+    CompanyID: str | None = EzField("cbc", default=None)
+    CompanyLegalForm: str | None = EzField("cbc", default=None)
+    CompanyLegalFormCode: str | None = EzField("cbc", default=None)
+    CurrencyCode: str | None = EzField("cbc", default=None)
+
+
+PartyLegalEntityType = PartyLegalEntity
+
+
+class DocumentReference(CacEntity):
+    ID: str | None = EzField("cbc", default=None)
+    DocumentTypeCode: str | None = EzField("cbc", default=None)
+    URI: str | None = EzField("cbc", default=None)
+    IssueDate: str | None = EzField("cbc", default=None)
+    IssueTime: str | None = EzField("cbc", default=None)
+    DocumentType: str | None = EzField("cbc", default=None)
+    LanguageCode: str | None = EzField("cbc", default=None)
+    CategoryCode: str | None = EzField("cbc", default=None)
+
+
+DocumentReferenceType = DocumentReference
+
+
+class PartyName(CacEntity):
     Name: str = EzField("cbc")
 
 
-@dataclasses.dataclass()
-class Party(EzXMLModel):
-    _ns = "cac"
-    PartyName: PartyName | None = None
-    PartyIdentification: list[PartyIdentification] | None = None
-    PartyLegalEntity: list[PartyLegalEntity] | None = None
-    Contact: Contact | None = None
-    PostalAddress: Address | None = None
-    PhysicalLocation: Location | None = None
+PartyNameType = PartyName
 
 
-@dataclasses.dataclass()
-class AccountingSupplierParty(EzXMLModel):
-    _ns = "cac"
-    Party: Party | None = None
-    CustomerAssignedAccountID: str | None = EzField("cbc", default=None)
-    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
+class Contact(CacEntity):
+    ID: str | None = EzField("cbc", default=None)
+    Name: str | None = EzField("cbc", default=None)
+    Telephone: str | None = EzField("cbc", default=None)
+    Telefax: str | None = EzField("cbc", default=None)
+    ElectronicMail: str | None = EzField("cbc", default=None)
+    Note: str | None = EzField("cbc", default=None)
+    OtherCommunication: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class AccountingCustomerParty(EzXMLModel):
-    _ns = "cac"
-    Party: Party | None = None
-    CustomerAssignedAccountID: str | None = EzField("cbc", default=None)
-    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
+ContactType = Contact
 
 
-@dataclasses.dataclass()
-class PayeeParty(EzXMLModel):
-    _ns = "cac"
-    PartyName: PartyName | None = None
-    PartyIdentification: list[PartyIdentification] | None = None
-    PartyLegalEntity: list[PartyLegalEntity] | None = None
-    Contact: Contact | None = None
-    PostalAddress: Address | None = None
+class FinancialAccount(CacEntity):
+    ID: str | None = EzField("cbc", default=None)
+    Name: str | None = EzField("cbc", default=None)
+    AccountTypeCode: str | None = EzField("cbc", default=None)
+    AccountNumber: str | None = EzField("cbc", default=None)
+    CurrencyCode: str | None = EzField("cbc", default=None)
+    PaymentNote: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class BuyerCustomerParty(EzXMLModel):
-    _ns = "cac"
-    Party: Party | None = None
-    DeliveryContact: Contact | None = None
-    AccountingContact: Contact | None = None
-    BuyerAssignedAccountID: str | None = EzField("cbc", default=None)
-    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
-
-
-@dataclasses.dataclass()
-class SellerSupplierParty(EzXMLModel):
-    _ns = "cac"
-    Party: Party | None = None
-    DeliveryContact: Contact | None = None
-    AccountingContact: Contact | None = None
-    BuyerAssignedAccountID: str | None = EzField("cbc", default=None)
-    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
-
-
-@dataclasses.dataclass()
-class TaxRepresentativeParty(EzXMLModel):
-    _ns = "cac"
-    PartyName: PartyName | None = None
-    PartyIdentification: list[PartyIdentification] | None = None
-    PartyLegalEntity: list[PartyLegalEntity] | None = None
-    Contact: Contact | None = None
-    PostalAddress: Address | None = None
-
-
-@dataclasses.dataclass()
-class PayableAmount(EzXMLModel):
-    _ns = "cbc"
+class TaxableAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
 
 
-@dataclasses.dataclass()
-class TaxAmount(EzXMLModel):
-    _ns = "cbc"
+class LegalMonetaryTotal(CacEntity):
+    PayableAmount: PayableAmountType
+
+
+LegalMonetaryTotalType = LegalMonetaryTotal
+
+
+class LineExtensionAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
 
 
-@dataclasses.dataclass()
-class TaxableAmount(EzXMLModel):
-    _ns = "cbc"
-    value: str
-    currencyID: str = EzField(type="attribute")
-
-
-@dataclasses.dataclass()
-class LegalMonetaryTotal(EzXMLModel):
-    _ns = "cac"
-    PayableAmount: PayableAmount
-
-
-@dataclasses.dataclass()
-class LineExtensionAmount(EzXMLModel):
-    _ns = "cbc"
-    value: str
-    currencyID: str = EzField(type="attribute")
-
-
-@dataclasses.dataclass()
-class Country(EzXMLModel):
-    _ns = "cac"
+class Country(CacEntity):
     IdentificationCode: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class Address(EzXMLModel):
-    _ns = "cac"
+CountryType = Country
+
+
+class Address(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     AddressTypeCode: str | None = EzField("cbc", default=None)
     StreetName: str | None = EzField("cbc", default=None)
@@ -146,70 +136,109 @@ class Address(EzXMLModel):
     BlockName: str | None = EzField("cbc", default=None)
     Building: str | None = EzField("cbc", default=None)
     InhouseMail: str | None = EzField("cbc", default=None)
-    Country: Country | None = None
+    Country: CountryType | None = None
 
 
-@dataclasses.dataclass()
-class Contact(EzXMLModel):
-    _ns = "cac"
-    ID: str | None = EzField("cbc", default=None)
-    Name: str | None = EzField("cbc", default=None)
-    Telephone: str | None = EzField("cbc", default=None)
-    Telefax: str | None = EzField("cbc", default=None)
-    ElectronicMail: str | None = EzField("cbc", default=None)
-    Note: str | None = EzField("cbc", default=None)
-    OtherCommunication: str | None = EzField("cbc", default=None)
+AddressType = Address
 
 
-@dataclasses.dataclass()
-class PartyIdentification(EzXMLModel):
-    _ns = "cac"
-    ID: str
-    schemeID: str | None = EzField(type="attribute")
-
-
-@dataclasses.dataclass()
-class PartyLegalEntity(EzXMLModel):
-    _ns = "cac"
-    RegistrationName: str | None = EzField("cbc", default=None)
-    CompanyID: str | None = EzField("cbc", default=None)
-    CompanyLegalForm: str | None = EzField("cbc", default=None)
-    CompanyLegalFormCode: str | None = EzField("cbc", default=None)
-    CurrencyCode: str | None = EzField("cbc", default=None)
-
-
-@dataclasses.dataclass()
-class FinancialAccount(EzXMLModel):
-    _ns = "cac"
-    ID: str | None = EzField("cbc", default=None)
-    Name: str | None = EzField("cbc", default=None)
-    AccountTypeCode: str | None = EzField("cbc", default=None)
-    AccountNumber: str | None = EzField("cbc", default=None)
-    CurrencyCode: str | None = EzField("cbc", default=None)
-    PaymentNote: str | None = EzField("cbc", default=None)
-
-
-@dataclasses.dataclass()
-class Location(EzXMLModel):
-    _ns = "cac"
+class Location(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Description: str | None = EzField("cbc", default=None)
     CountrySubentity: str | None = EzField("cbc", default=None)
-    Address: Address | None = None
+    Address: AddressType | None = None
 
 
-@dataclasses.dataclass()
-class TaxScheme(EzXMLModel):
-    _ns = "cac"
+class Party(CacEntity):
+    PartyName: PartyNameType | None = None
+    PartyIdentification: list[PartyIdentificationType] | None = None
+    PartyLegalEntity: list[PartyLegalEntityType] | None = None
+    Contact: ContactType | None = None
+    PostalAddress: Address | None = None
+    PhysicalLocation: Location | None = None
+
+
+PartyType = Party
+
+
+class AccountingSupplierParty(CacEntity):
+    Party: PartyType | None = None
+    CustomerAssignedAccountID: str | None = EzField("cbc", default=None)
+    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
+
+
+AccountingSupplierPartyType = AccountingSupplierParty
+
+
+class AccountingCustomerParty(CacEntity):
+    Party: PartyType | None = None
+    CustomerAssignedAccountID: str | None = EzField("cbc", default=None)
+    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
+
+
+class PayeeParty(CacEntity):
+    PartyName: PartyNameType | None = None
+    PartyIdentification: list[PartyIdentificationType] | None = None
+    PartyLegalEntity: list[PartyLegalEntityType] | None = None
+    Contact: ContactType | None = None
+    PostalAddress: Address | None = None
+
+
+PayeePartyType = PayeeParty
+
+
+class BuyerCustomerParty(CacEntity):
+    Party: PartyType | None = None
+    DeliveryContact: Contact | None = None
+    AccountingContact: Contact | None = None
+    BuyerAssignedAccountID: str | None = EzField("cbc", default=None)
+    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
+
+
+BuyerCustomerPartyType = BuyerCustomerParty
+
+
+class SellerSupplierParty(CacEntity):
+    Party: PartyType | None = None
+    DeliveryContact: Contact | None = None
+    AccountingContact: Contact | None = None
+    BuyerAssignedAccountID: str | None = EzField("cbc", default=None)
+    SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
+
+
+SellerSupplierPartyType = SellerSupplierParty
+
+
+class TaxRepresentativeParty(CacEntity):
+    PartyName: PartyNameType | None = None
+    PartyIdentification: list[PartyIdentificationType] | None = None
+    PartyLegalEntity: list[PartyLegalEntityType] | None = None
+    Contact: ContactType | None = None
+    PostalAddress: Address | None = None
+
+
+TaxRepresentativePartyType = TaxRepresentativeParty
+
+
+class TaxAmount(CbcEntity):
+    value: str
+    currencyID: str = EzField(type="attribute")
+
+
+TaxAmountType = TaxAmount
+
+
+class TaxScheme(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
     TaxTypeCode: str | None = EzField("cbc", default=None)
     CurrencyCode: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class ExchangeRate(EzXMLModel):
-    _ns = "cac"
+TaxSchemeType = TaxScheme
+
+
+class ExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
     Rate: str | None = EzField("cbc", default=None)
@@ -218,9 +247,7 @@ class ExchangeRate(EzXMLModel):
     ContractCurrencyCode: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class Period(EzXMLModel):
-    _ns = "cac"
+class Period(CacEntity):
     StartDate: str | None = EzField("cbc", default=None)
     StartTime: str | None = EzField("cbc", default=None)
     EndDate: str | None = EzField("cbc", default=None)
@@ -230,9 +257,7 @@ class Period(EzXMLModel):
     Description: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class InvoicePeriod(EzXMLModel):
-    _ns = "cac"
+class InvoicePeriod(CacEntity):
     StartDate: str | None = EzField("cbc", default=None)
     StartTime: str | None = EzField("cbc", default=None)
     EndDate: str | None = EzField("cbc", default=None)
@@ -242,37 +267,27 @@ class InvoicePeriod(EzXMLModel):
     Description: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class DocumentReference(EzXMLModel):
-    _ns = "cac"
-    ID: str | None = EzField("cbc", default=None)
-    DocumentTypeCode: str | None = EzField("cbc", default=None)
-    URI: str | None = EzField("cbc", default=None)
-    IssueDate: str | None = EzField("cbc", default=None)
-    IssueTime: str | None = EzField("cbc", default=None)
-    DocumentType: str | None = EzField("cbc", default=None)
-    LanguageCode: str | None = EzField("cbc", default=None)
-    CategoryCode: str | None = EzField("cbc", default=None)
+InvoicePeriodType = InvoicePeriod
 
 
-@dataclasses.dataclass()
-class BillingReference(EzXMLModel):
-    _ns = "cac"
+class BillingReference(CacEntity):
     InvoiceDocumentReference: DocumentReference | None = None
 
 
-@dataclasses.dataclass()
-class ProjectReference(EzXMLModel):
-    _ns = "cac"
+BillingReferenceType = BillingReference
+
+
+class ProjectReference(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     UUID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
     Description: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class DeliveryTerms(EzXMLModel):
-    _ns = "cac"
+ProjectReferenceType = ProjectReference
+
+
+class DeliveryTerms(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     SpecialTransportTerms: str | None = EzField("cbc", default=None)
     LossRiskResponsibilityCode: str | None = EzField("cbc", default=None)
@@ -280,9 +295,10 @@ class DeliveryTerms(EzXMLModel):
     DeliveryLocation: Location | None = None
 
 
-@dataclasses.dataclass()
-class PaymentTerms(EzXMLModel):
-    _ns = "cac"
+DeliveryTermsType = DeliveryTerms
+
+
+class PaymentTerms(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     PaymentMeansID: str | None = EzField("cbc", default=None)
     PaymentDueDate: str | None = EzField("cbc", default=None)
@@ -291,9 +307,10 @@ class PaymentTerms(EzXMLModel):
     SettlementPeriod: Period | None = None
 
 
-@dataclasses.dataclass()
-class PaymentMeans(EzXMLModel):
-    _ns = "cac"
+PaymentTermsType = PaymentTerms
+
+
+class PaymentMeans(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     PaymentMeansCode: str | None = EzField("cbc", default=None)
     PaymentDueDate: str | None = EzField("cbc", default=None)
@@ -305,9 +322,10 @@ class PaymentMeans(EzXMLModel):
     CardAccount: FinancialAccount | None = None
 
 
-@dataclasses.dataclass()
-class PrepaidPayment(EzXMLModel):
-    _ns = "cac"
+PaymentMeansType = PaymentMeans
+
+
+class PrepaidPayment(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     PaidAmount: PayableAmount | None = None
     ReceivedDate: str | None = EzField("cbc", default=None)
@@ -315,9 +333,10 @@ class PrepaidPayment(EzXMLModel):
     InstructionNote: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class Delivery(EzXMLModel):
-    _ns = "cac"
+PrepaidPaymentType = PrepaidPayment
+
+
+class Delivery(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Quantity: str | None = EzField("cbc", default=None)
     MinimumQuantity: str | None = EzField("cbc", default=None)
@@ -337,12 +356,13 @@ class Delivery(EzXMLModel):
     CarrierParty: Party | None = None
     DeliveryParty: Party | None = None
     NotifyParty: Party | None = None
-    DeliveryTerms: DeliveryTerms | None = None
+    DeliveryTerms: DeliveryTermsType | None = None
 
 
-@dataclasses.dataclass()
-class AllowanceCharge(EzXMLModel):
-    _ns = "cac"
+DeliveryType = Delivery
+
+
+class AllowanceCharge(CacEntity):
     ChargeIndicator: str | None = EzField("cbc", default=None)
     AllowanceChargeReasonCode: str | None = EzField("cbc", default=None)
     AllowanceChargeReason: str | None = EzField("cbc", default=None)
@@ -352,9 +372,10 @@ class AllowanceCharge(EzXMLModel):
     SequenceNumeric: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class TaxExchangeRate(EzXMLModel):
-    _ns = "cac"
+AllowanceChargeType = AllowanceCharge
+
+
+class TaxExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
     Rate: str | None = EzField("cbc", default=None)
@@ -363,9 +384,10 @@ class TaxExchangeRate(EzXMLModel):
     ContractCurrencyCode: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class PricingExchangeRate(EzXMLModel):
-    _ns = "cac"
+TaxExchangeRateType = TaxExchangeRate
+
+
+class PricingExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
     Rate: str | None = EzField("cbc", default=None)
@@ -374,9 +396,10 @@ class PricingExchangeRate(EzXMLModel):
     ContractCurrencyCode: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class PaymentExchangeRate(EzXMLModel):
-    _ns = "cac"
+PricingExchangeRateType = PricingExchangeRate
+
+
+class PaymentExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
     Rate: str | None = EzField("cbc", default=None)
@@ -385,9 +408,10 @@ class PaymentExchangeRate(EzXMLModel):
     ContractCurrencyCode: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class PaymentAlternativeExchangeRate(EzXMLModel):
-    _ns = "cac"
+PaymentExchangeRateType = PaymentExchangeRate
+
+
+class PaymentAlternativeExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
     Rate: str | None = EzField("cbc", default=None)
@@ -396,63 +420,69 @@ class PaymentAlternativeExchangeRate(EzXMLModel):
     ContractCurrencyCode: str | None = EzField("cbc", default=None)
 
 
-@dataclasses.dataclass()
-class TaxCategory(EzXMLModel):
-    _ns = "cac"
+PaymentAlternativeExchangeRateType = PaymentAlternativeExchangeRate
+
+
+class TaxCategory(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
     Percent: str | None = EzField("cbc", default=None)
     TaxExemptionReasonCode: str | None = EzField("cbc", default=None)
     TaxExemptionReason: str | None = EzField("cbc", default=None)
     TierRange: str | None = EzField("cbc", default=None)
-    TaxScheme: TaxScheme | None = None
+    TaxScheme: TaxSchemeType | None = None
 
 
-@dataclasses.dataclass()
-class TaxSubtotal(EzXMLModel):
-    _ns = "cac"
-    TaxableAmount: TaxableAmount | None = None
-    TaxAmount: TaxAmount | None = None
+TaxCategoryType = TaxCategory
+
+
+class TaxSubtotal(CacEntity):
+    taxableAmount: TaxableAmount | None = None
+    taxAmount: TaxAmount | None = None
     CalculationSequenceNumeric: str | None = EzField("cbc", default=None)
     TransactionCurrencyTaxAmount: str | None = EzField("cbc", default=None)
     Percent: str | None = EzField("cbc", default=None)
     BaseUnitMeasure: str | None = EzField("cbc", default=None)
     PerUnitAmount: PayableAmount | None = None
-    TaxCategory: TaxCategory | None = None
+    TaxCategory: TaxCategoryType | None = None
 
 
-@dataclasses.dataclass()
-class TaxTotal(EzXMLModel):
-    _ns = "cac"
-    TaxAmount: TaxAmount | None = None
+TaxSubtotalType = TaxSubtotal
+
+
+class TaxTotal(CacEntity):
+    TaxAmount: TaxAmountType | None = None
     RoundingAmount: PayableAmount | None = None
     TaxEvidenceIndicator: str | None = EzField("cbc", default=None)
     TaxIncludedIndicator: str | None = EzField("cbc", default=None)
-    TaxSubtotal: list[TaxSubtotal] | None = None
+    TaxSubtotal: list[TaxSubtotalType] | None = None
 
 
-@dataclasses.dataclass()
-class WithholdingTaxTotal(EzXMLModel):
-    _ns = "cac"
-    TaxAmount: TaxAmount | None = None
+TaxTotalType = TaxTotal
+
+
+class WithholdingTaxTotal(CacEntity):
+    TaxAmount: TaxAmountType | None = None
     RoundingAmount: PayableAmount | None = None
     TaxEvidenceIndicator: str | None = EzField("cbc", default=None)
     TaxIncludedIndicator: str | None = EzField("cbc", default=None)
-    TaxSubtotal: list[TaxSubtotal] | None = None
+    TaxSubtotal: list[TaxSubtotalType] | None = None
 
 
-@dataclasses.dataclass()
-class Signature(EzXMLModel):
-    _ns = "cac"
+WithholdingTaxTotalType = WithholdingTaxTotal
+
+
+class Signature(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Note: str | None = EzField("cbc", default=None)
     ReferencedSignatureID: str | None = EzField("cbc", default=None)
     SignedBy: Party | None = None
 
 
-@dataclasses.dataclass()
-class Item(EzXMLModel):
-    _ns = "cac"
+SignatureType = Signature
+
+
+class Item(CacEntity):
     Description: str | None = EzField("cbc", default=None)
     PackQuantity: str | None = EzField("cbc", default=None)
     PackSizeNumeric: str | None = EzField("cbc", default=None)
@@ -470,26 +500,22 @@ class Item(EzXMLModel):
     OriginCountry: Country | None = None
 
 
-@dataclasses.dataclass(kw_only=True)
-class InvoiceLine(EzXMLModel):
-    _ns = "cac"
+class InvoiceLine(CacEntity):
     ID: str = EzField("cbc")
-    LineExtensionAmount: LineExtensionAmount
-    Item: Item
+    lineExtensionAmount: LineExtensionAmount
+    item: Item
     UUID: str | None = EzField("cbc", default=None)
     Note: str | None = EzField("cbc", default=None)
     InvoicedQuantity: str | None = EzField("cbc", default=None)
-    DocumentReference: list[DocumentReference] | None = None
+    DocumentReference: list[DocumentReferenceType] | None = None
     PricingReference: str | None = EzField("cac", default=None)
-    Delivery: Delivery | None = None
-    TaxTotal: list[TaxTotal] | None = None
-    WithholdingTaxTotal: list[WithholdingTaxTotal] | None = None
-    AllowanceCharge: list[AllowanceCharge] | None = None
+    Delivery: DeliveryType | None = None
+    TaxTotal: list[TaxTotalType] | None = None
+    WithholdingTaxTotal: list[WithholdingTaxTotalType] | None = None
+    AllowanceCharge: list[AllowanceChargeType] | None = None
 
 
-@nsmap(NS_MAP)
-@dataclasses.dataclass(kw_only=True)
-class Invoice(EzXMLModel):
+class Invoice(UblEntity):
     CustomizationID: str | None = EzField("cbc", default=None)
     ProfileID: str | None = EzField("cbc", default=None)
     ProfileExecutionID: str | None = EzField("cbc", default=None)
@@ -511,34 +537,34 @@ class Invoice(EzXMLModel):
     AccountingCost: str | None = EzField("cbc", default=None)
     LineCountNumeric: str | None = EzField("cbc", default=None)
     BuyerReference: str | None = EzField("cbc", default=None)
-    InvoicePeriod: InvoicePeriod | None = None
-    OrderReference: OrderReference | None = None
-    BillingReference: list[BillingReference] | None = None
+    InvoicePeriod: InvoicePeriodType | None = None
+    OrderReference: OrderReferenceType | None = None
+    BillingReference: list[BillingReferenceType] | None = None
     DespatchDocumentReference: list[DocumentReference] | None = None
     ReceiptDocumentReference: list[DocumentReference] | None = None
     StatementDocumentReference: list[DocumentReference] | None = None
     OriginatorDocumentReference: list[DocumentReference] | None = None
     ContractDocumentReference: list[DocumentReference] | None = None
     AdditionalDocumentReference: list[DocumentReference] | None = None
-    ProjectReference: list[ProjectReference] | None = None
-    Signature: list[Signature] | None = None
-    AccountingSupplierParty: AccountingSupplierParty
+    ProjectReference: list[ProjectReferenceType] | None = None
+    Signature: list[SignatureType] | None = None
+    AccountingSupplierParty: AccountingSupplierPartyType
     AccountingCustomerParty: AccountingCustomerParty
-    PayeeParty: PayeeParty | None = None
-    BuyerCustomerParty: BuyerCustomerParty | None = None
-    SellerSupplierParty: SellerSupplierParty | None = None
-    TaxRepresentativeParty: TaxRepresentativeParty | None = None
-    Delivery: list[Delivery] | None = None
-    DeliveryTerms: DeliveryTerms | None = None
-    PaymentMeans: list[PaymentMeans] | None = None
-    PaymentTerms: list[PaymentTerms] | None = None
-    PrepaidPayment: list[PrepaidPayment] | None = None
-    AllowanceCharge: list[AllowanceCharge] | None = None
-    TaxExchangeRate: TaxExchangeRate | None = None
-    PricingExchangeRate: PricingExchangeRate | None = None
-    PaymentExchangeRate: PaymentExchangeRate | None = None
-    PaymentAlternativeExchangeRate: PaymentAlternativeExchangeRate | None = None
-    TaxTotal: list[TaxTotal] | None = None
-    WithholdingTaxTotal: list[WithholdingTaxTotal] | None = None
-    LegalMonetaryTotal: LegalMonetaryTotal
+    PayeeParty: PayeePartyType | None = None
+    BuyerCustomerParty: BuyerCustomerPartyType | None = None
+    SellerSupplierParty: SellerSupplierPartyType | None = None
+    TaxRepresentativeParty: TaxRepresentativePartyType | None = None
+    Delivery: list[DeliveryType] | None = None
+    DeliveryTerms: DeliveryTermsType | None = None
+    PaymentMeans: list[PaymentMeansType] | None = None
+    PaymentTerms: list[PaymentTermsType] | None = None
+    PrepaidPayment: list[PrepaidPaymentType] | None = None
+    AllowanceCharge: list[AllowanceChargeType] | None = None
+    TaxExchangeRate: TaxExchangeRateType | None = None
+    PricingExchangeRate: PricingExchangeRateType | None = None
+    PaymentExchangeRate: PaymentExchangeRateType | None = None
+    PaymentAlternativeExchangeRate: PaymentAlternativeExchangeRateType | None = None
+    TaxTotal: list[TaxTotalType] | None = None
+    WithholdingTaxTotal: list[WithholdingTaxTotalType] | None = None
+    LegalMonetaryTotal: LegalMonetaryTotalType
     InvoiceLines: list[InvoiceLine]

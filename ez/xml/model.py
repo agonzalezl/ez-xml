@@ -1,7 +1,7 @@
 from __future__ import annotations
 from lxml.builder import ElementMaker
 import dataclasses
-from typing import Any, ClassVar, get_args, get_origin, get_type_hints, Union
+from typing import Any, ClassVar, get_args, get_origin, get_type_hints
 from types import UnionType
 import lxml.etree
 
