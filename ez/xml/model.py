@@ -22,10 +22,12 @@ def nsmap(nsmap):
 
 @dataclasses.dataclass()
 class EzXMLModel:
+    # To be deprecated
     nsmap: ClassVar[dict | None] = None
+    _nsmap: ClassVar[dict | None] = None
 
     def build(self, nsmap: dict | None = None) -> lxml.etree._Element:
-        nsmap = nsmap or self.nsmap
+        nsmap = nsmap or self.nsmap or self._nsmap
         E = ElementMaker(nsmap=nsmap)
 
         children = []
