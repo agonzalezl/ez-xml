@@ -112,6 +112,9 @@ class TaxableAmount(CbcEntity):
     currencyID: str = EzField(type="attribute")
 
 
+TaxableAmountType = TaxableAmount
+
+
 @dataclasses.dataclass()
 class LegalMonetaryTotal(CacEntity):
     PayableAmount: PayableAmountType
@@ -124,6 +127,9 @@ LegalMonetaryTotalType = LegalMonetaryTotal
 class LineExtensionAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
+
+
+LineExtensionAmountType = LineExtensionAmount
 
 
 @dataclasses.dataclass()
@@ -481,8 +487,8 @@ TaxCategoryType = TaxCategory
 
 @dataclasses.dataclass()
 class TaxSubtotal(CacEntity):
-    taxableAmount: TaxableAmount | None = None
-    taxAmount: TaxAmount | None = None
+    TaxableAmount: TaxableAmountType | None = None
+    TaxAmount: TaxAmountType | None = None
     CalculationSequenceNumeric: str | None = EzField("cbc", default=None)
     TransactionCurrencyTaxAmount: str | None = EzField("cbc", default=None)
     Percent: str | None = EzField("cbc", default=None)
@@ -548,11 +554,14 @@ class Item(CacEntity):
     OriginCountry: Country | None = None
 
 
+ItemType = Item
+
+
 @dataclasses.dataclass()
 class InvoiceLine(CacEntity):
     ID: str = EzField("cbc")
-    lineExtensionAmount: LineExtensionAmount
-    item: Item
+    LineExtensionAmount: LineExtensionAmountType
+    Item: ItemType
     UUID: str | None = EzField("cbc", default=None)
     Note: str | None = EzField("cbc", default=None)
     InvoicedQuantity: str | None = EzField("cbc", default=None)

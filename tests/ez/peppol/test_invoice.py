@@ -1,6 +1,5 @@
-import pytest
 
-from ez.peppol._invoice import Invoice, AccountingSupplierParty, Party
+from ez.peppol._invoice import Invoice, AccountingSupplierParty, Party, PartyLegalEntity
 from ez.ubl._invoice import (
     InvoiceLine,
     AccountingCustomerParty,
@@ -25,7 +24,7 @@ from pathlib import Path
 from saxonche import PySaxonProcessor
 
 
-@pytest.mark.xfail
+# @pytest.mark.xfail
 def test_invoice_build_validates_against_peppol_schematron():
     """Test invoice validates against Peppol BIS 3.0 Schematron rules"""
 
@@ -51,6 +50,7 @@ def test_invoice_build_validates_against_peppol_schematron():
                     PostalZone="SW1A 1AA",
                     Country=Country(IdentificationCode="GB"),
                 ),
+                PartyLegalEntity=[PartyLegalEntity(RegistrationName="Seller LTD")],
                 PhysicalLocation=Location(
                     ID="123",
                 ),
@@ -65,6 +65,7 @@ def test_invoice_build_validates_against_peppol_schematron():
                     PostalZone="10115",
                     Country=Country(IdentificationCode="DE"),
                 ),
+                PartyLegalEntity=[PartyLegalEntity(RegistrationName="Buyer INC")],
             )
         ),
         TaxTotal=[
@@ -120,10 +121,10 @@ def test_invoice_build():
         DocumentCurrencyCode="eur",
         BuyerReference="N/A",
         AccountingSupplierParty=AccountingSupplierParty(
-            Party=Party(EndpointID="abcd-123", PartyName=PartyName(Name="Seller Co"))
+            Party=Party(EndpointID="abcd-123", PartyName=PartyName(Name="Seller Co"), PartyLegalEntity=[PartyLegalEntity(RegistrationName="Seller CO")],)
         ),
         AccountingCustomerParty=AccountingCustomerParty(
-            Party=Party(EndpointID="abcd-123", PartyName=PartyName(Name="Buyer Co"))
+            Party=Party(EndpointID="abcd-123", PartyName=PartyName(Name="Buyer Co"), PartyLegalEntity=[PartyLegalEntity(RegistrationName="Buyer CO")],)
         ),
         TaxTotal=[
             TaxTotal(
@@ -179,6 +180,9 @@ def test_invoice_build():
       <cac:PartyName>
         <cbc:Name>Seller Co</cbc:Name>
       </cac:PartyName>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Seller CO</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
     </cac:Party>
   </cac:AccountingSupplierParty>
   <cac:AccountingCustomerParty>
@@ -187,6 +191,9 @@ def test_invoice_build():
       <cac:PartyName>
         <cbc:Name>Buyer Co</cbc:Name>
       </cac:PartyName>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Buyer CO</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
     </cac:Party>
   </cac:AccountingCustomerParty>
   <cac:TaxTotal>
