@@ -1,19 +1,24 @@
-from ez.xml.model_pydantic import PydanticEzXMLModel, EzField
+import dataclasses
+from ez.xml.model import EzXMLModel, EzField
 from ._constants import NS_MAP
 
 
-class UblEntity(PydanticEzXMLModel):
+@dataclasses.dataclass()
+class UblEntity(EzXMLModel):
     _nsmap = NS_MAP
 
 
-class CacEntity(UblEntity):
+@dataclasses.dataclass()
+class CacEntity(EzXMLModel):
     _ns = "cac"
 
 
+@dataclasses.dataclass()
 class CbcEntity(UblEntity):
     _ns = "cbc"
 
 
+@dataclasses.dataclass()
 class PartyIdentification(CacEntity):
     ID: str
     schemeID: str | None = EzField(type="attribute")
@@ -22,6 +27,7 @@ class PartyIdentification(CacEntity):
 PartyIdentificationType = PartyIdentification
 
 
+@dataclasses.dataclass()
 class PayableAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
@@ -30,6 +36,7 @@ class PayableAmount(CbcEntity):
 PayableAmountType = PayableAmount
 
 
+@dataclasses.dataclass()
 class OrderReference(CacEntity):
     ID: str = EzField("cbc")
     SalesOrderID: str = EzField("cbc")
@@ -40,6 +47,7 @@ class OrderReference(CacEntity):
 OrderReferenceType = OrderReference
 
 
+@dataclasses.dataclass()
 class PartyLegalEntity(CacEntity):
     RegistrationName: str | None = EzField("cbc", default=None)
     CompanyID: str | None = EzField("cbc", default=None)
@@ -51,6 +59,7 @@ class PartyLegalEntity(CacEntity):
 PartyLegalEntityType = PartyLegalEntity
 
 
+@dataclasses.dataclass()
 class DocumentReference(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     DocumentTypeCode: str | None = EzField("cbc", default=None)
@@ -65,6 +74,7 @@ class DocumentReference(CacEntity):
 DocumentReferenceType = DocumentReference
 
 
+@dataclasses.dataclass()
 class PartyName(CacEntity):
     Name: str = EzField("cbc")
 
@@ -72,6 +82,7 @@ class PartyName(CacEntity):
 PartyNameType = PartyName
 
 
+@dataclasses.dataclass()
 class Contact(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
@@ -85,6 +96,7 @@ class Contact(CacEntity):
 ContactType = Contact
 
 
+@dataclasses.dataclass()
 class FinancialAccount(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
@@ -94,11 +106,13 @@ class FinancialAccount(CacEntity):
     PaymentNote: str | None = EzField("cbc", default=None)
 
 
+@dataclasses.dataclass()
 class TaxableAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
 
 
+@dataclasses.dataclass()
 class LegalMonetaryTotal(CacEntity):
     PayableAmount: PayableAmountType
 
@@ -106,11 +120,13 @@ class LegalMonetaryTotal(CacEntity):
 LegalMonetaryTotalType = LegalMonetaryTotal
 
 
+@dataclasses.dataclass()
 class LineExtensionAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
 
 
+@dataclasses.dataclass()
 class Country(CacEntity):
     IdentificationCode: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
@@ -119,6 +135,7 @@ class Country(CacEntity):
 CountryType = Country
 
 
+@dataclasses.dataclass()
 class Address(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     AddressTypeCode: str | None = EzField("cbc", default=None)
@@ -142,6 +159,7 @@ class Address(CacEntity):
 AddressType = Address
 
 
+@dataclasses.dataclass()
 class Location(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Description: str | None = EzField("cbc", default=None)
@@ -149,6 +167,7 @@ class Location(CacEntity):
     Address: AddressType | None = None
 
 
+@dataclasses.dataclass()
 class Party(CacEntity):
     PartyName: PartyNameType | None = None
     PartyIdentification: list[PartyIdentificationType] | None = None
@@ -161,6 +180,7 @@ class Party(CacEntity):
 PartyType = Party
 
 
+@dataclasses.dataclass()
 class AccountingSupplierParty(CacEntity):
     Party: PartyType | None = None
     CustomerAssignedAccountID: str | None = EzField("cbc", default=None)
@@ -170,12 +190,14 @@ class AccountingSupplierParty(CacEntity):
 AccountingSupplierPartyType = AccountingSupplierParty
 
 
+@dataclasses.dataclass()
 class AccountingCustomerParty(CacEntity):
     Party: PartyType | None = None
     CustomerAssignedAccountID: str | None = EzField("cbc", default=None)
     SupplierAssignedAccountID: str | None = EzField("cbc", default=None)
 
 
+@dataclasses.dataclass()
 class PayeeParty(CacEntity):
     PartyName: PartyNameType | None = None
     PartyIdentification: list[PartyIdentificationType] | None = None
@@ -187,6 +209,7 @@ class PayeeParty(CacEntity):
 PayeePartyType = PayeeParty
 
 
+@dataclasses.dataclass()
 class BuyerCustomerParty(CacEntity):
     Party: PartyType | None = None
     DeliveryContact: Contact | None = None
@@ -198,6 +221,7 @@ class BuyerCustomerParty(CacEntity):
 BuyerCustomerPartyType = BuyerCustomerParty
 
 
+@dataclasses.dataclass()
 class SellerSupplierParty(CacEntity):
     Party: PartyType | None = None
     DeliveryContact: Contact | None = None
@@ -209,6 +233,7 @@ class SellerSupplierParty(CacEntity):
 SellerSupplierPartyType = SellerSupplierParty
 
 
+@dataclasses.dataclass()
 class TaxRepresentativeParty(CacEntity):
     PartyName: PartyNameType | None = None
     PartyIdentification: list[PartyIdentificationType] | None = None
@@ -220,6 +245,7 @@ class TaxRepresentativeParty(CacEntity):
 TaxRepresentativePartyType = TaxRepresentativeParty
 
 
+@dataclasses.dataclass()
 class TaxAmount(CbcEntity):
     value: str
     currencyID: str = EzField(type="attribute")
@@ -228,6 +254,7 @@ class TaxAmount(CbcEntity):
 TaxAmountType = TaxAmount
 
 
+@dataclasses.dataclass()
 class TaxScheme(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
@@ -238,6 +265,7 @@ class TaxScheme(CacEntity):
 TaxSchemeType = TaxScheme
 
 
+@dataclasses.dataclass()
 class ExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
@@ -247,6 +275,7 @@ class ExchangeRate(CacEntity):
     ContractCurrencyCode: str | None = EzField("cbc", default=None)
 
 
+@dataclasses.dataclass()
 class Period(CacEntity):
     StartDate: str | None = EzField("cbc", default=None)
     StartTime: str | None = EzField("cbc", default=None)
@@ -257,6 +286,7 @@ class Period(CacEntity):
     Description: str | None = EzField("cbc", default=None)
 
 
+@dataclasses.dataclass()
 class InvoicePeriod(CacEntity):
     StartDate: str | None = EzField("cbc", default=None)
     StartTime: str | None = EzField("cbc", default=None)
@@ -270,6 +300,7 @@ class InvoicePeriod(CacEntity):
 InvoicePeriodType = InvoicePeriod
 
 
+@dataclasses.dataclass()
 class BillingReference(CacEntity):
     InvoiceDocumentReference: DocumentReference | None = None
 
@@ -277,6 +308,7 @@ class BillingReference(CacEntity):
 BillingReferenceType = BillingReference
 
 
+@dataclasses.dataclass()
 class ProjectReference(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     UUID: str | None = EzField("cbc", default=None)
@@ -287,6 +319,7 @@ class ProjectReference(CacEntity):
 ProjectReferenceType = ProjectReference
 
 
+@dataclasses.dataclass()
 class DeliveryTerms(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     SpecialTransportTerms: str | None = EzField("cbc", default=None)
@@ -298,6 +331,7 @@ class DeliveryTerms(CacEntity):
 DeliveryTermsType = DeliveryTerms
 
 
+@dataclasses.dataclass()
 class PaymentTerms(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     PaymentMeansID: str | None = EzField("cbc", default=None)
@@ -310,6 +344,7 @@ class PaymentTerms(CacEntity):
 PaymentTermsType = PaymentTerms
 
 
+@dataclasses.dataclass()
 class PaymentMeans(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     PaymentMeansCode: str | None = EzField("cbc", default=None)
@@ -325,6 +360,7 @@ class PaymentMeans(CacEntity):
 PaymentMeansType = PaymentMeans
 
 
+@dataclasses.dataclass()
 class PrepaidPayment(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     PaidAmount: PayableAmount | None = None
@@ -336,6 +372,7 @@ class PrepaidPayment(CacEntity):
 PrepaidPaymentType = PrepaidPayment
 
 
+@dataclasses.dataclass()
 class Delivery(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Quantity: str | None = EzField("cbc", default=None)
@@ -362,6 +399,7 @@ class Delivery(CacEntity):
 DeliveryType = Delivery
 
 
+@dataclasses.dataclass()
 class AllowanceCharge(CacEntity):
     ChargeIndicator: str | None = EzField("cbc", default=None)
     AllowanceChargeReasonCode: str | None = EzField("cbc", default=None)
@@ -375,6 +413,7 @@ class AllowanceCharge(CacEntity):
 AllowanceChargeType = AllowanceCharge
 
 
+@dataclasses.dataclass()
 class TaxExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
@@ -387,6 +426,7 @@ class TaxExchangeRate(CacEntity):
 TaxExchangeRateType = TaxExchangeRate
 
 
+@dataclasses.dataclass()
 class PricingExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
@@ -399,6 +439,7 @@ class PricingExchangeRate(CacEntity):
 PricingExchangeRateType = PricingExchangeRate
 
 
+@dataclasses.dataclass()
 class PaymentExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
@@ -411,6 +452,7 @@ class PaymentExchangeRate(CacEntity):
 PaymentExchangeRateType = PaymentExchangeRate
 
 
+@dataclasses.dataclass()
 class PaymentAlternativeExchangeRate(CacEntity):
     SourceCurrencyCode: str | None = EzField("cbc", default=None)
     TargetCurrencyCode: str | None = EzField("cbc", default=None)
@@ -423,6 +465,7 @@ class PaymentAlternativeExchangeRate(CacEntity):
 PaymentAlternativeExchangeRateType = PaymentAlternativeExchangeRate
 
 
+@dataclasses.dataclass()
 class TaxCategory(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Name: str | None = EzField("cbc", default=None)
@@ -436,6 +479,7 @@ class TaxCategory(CacEntity):
 TaxCategoryType = TaxCategory
 
 
+@dataclasses.dataclass()
 class TaxSubtotal(CacEntity):
     taxableAmount: TaxableAmount | None = None
     taxAmount: TaxAmount | None = None
@@ -450,6 +494,7 @@ class TaxSubtotal(CacEntity):
 TaxSubtotalType = TaxSubtotal
 
 
+@dataclasses.dataclass()
 class TaxTotal(CacEntity):
     TaxAmount: TaxAmountType | None = None
     RoundingAmount: PayableAmount | None = None
@@ -461,6 +506,7 @@ class TaxTotal(CacEntity):
 TaxTotalType = TaxTotal
 
 
+@dataclasses.dataclass()
 class WithholdingTaxTotal(CacEntity):
     TaxAmount: TaxAmountType | None = None
     RoundingAmount: PayableAmount | None = None
@@ -472,6 +518,7 @@ class WithholdingTaxTotal(CacEntity):
 WithholdingTaxTotalType = WithholdingTaxTotal
 
 
+@dataclasses.dataclass()
 class Signature(CacEntity):
     ID: str | None = EzField("cbc", default=None)
     Note: str | None = EzField("cbc", default=None)
@@ -482,6 +529,7 @@ class Signature(CacEntity):
 SignatureType = Signature
 
 
+@dataclasses.dataclass()
 class Item(CacEntity):
     Description: str | None = EzField("cbc", default=None)
     PackQuantity: str | None = EzField("cbc", default=None)
@@ -500,6 +548,7 @@ class Item(CacEntity):
     OriginCountry: Country | None = None
 
 
+@dataclasses.dataclass()
 class InvoiceLine(CacEntity):
     ID: str = EzField("cbc")
     lineExtensionAmount: LineExtensionAmount
@@ -515,6 +564,7 @@ class InvoiceLine(CacEntity):
     AllowanceCharge: list[AllowanceChargeType] | None = None
 
 
+@dataclasses.dataclass(kw_only=True)
 class Invoice(UblEntity):
     CustomizationID: str | None = EzField("cbc", default=None)
     ProfileID: str | None = EzField("cbc", default=None)
