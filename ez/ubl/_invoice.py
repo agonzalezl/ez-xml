@@ -19,9 +19,17 @@ class CbcEntity(UblEntity):
 
 
 @dataclasses.dataclass()
+class ID(CbcEntity):
+    value: str
+    schemeID: str | None = EzField(type="attribute", default=None)
+
+
+IDType = ID
+
+
+@dataclasses.dataclass()
 class PartyIdentification(CacEntity):
-    ID: str
-    schemeID: str | None = EzField(type="attribute")
+    ID: IDType
 
 
 PartyIdentificationType = PartyIdentification

@@ -22,6 +22,7 @@ from ez.ubl._invoice import (
     Country,
     Delivery,
     AllowanceCharge,
+    ID,
 )
 from lxml import etree
 from pathlib import Path
@@ -114,8 +115,8 @@ def test_invoice_build_withParty_details():
             Party=Party(
                 PartyName=PartyName(Name="ACME Corp"),
                 PartyIdentification=[
-                    PartyIdentification(ID="12345678", schemeID="VAT"),
-                    PartyIdentification(ID="US123456", schemeID="EIN"),
+                    PartyIdentification(ID=ID("12345678", schemeID="VAT")),
+                    PartyIdentification(ID=ID("US123456", schemeID="EIN")),
                 ],
                 Contact=Contact(
                     Name="John Doe",
@@ -135,7 +136,7 @@ def test_invoice_build_withParty_details():
             Party=Party(
                 PartyName=PartyName(Name="Client Inc"),
                 PartyIdentification=[
-                    PartyIdentification(ID="87654321", schemeID="VAT"),
+                    PartyIdentification(ID=ID("87654321", schemeID="VAT")),
                 ],
             )
         ),

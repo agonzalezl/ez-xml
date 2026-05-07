@@ -20,21 +20,41 @@ class PartyTaxScheme(ubl.CacEntity):
 
 PartyTaxSchemeType = PartyTaxScheme
 
+
 @dataclasses.dataclass()
 class PartyLegalEntity(ubl.PartyLegalEntity):
     RegistrationName: str = EzField("cbc")
 
+
 PartyLegalEntityType = PartyLegalEntity
+
+
+@dataclasses.dataclass(kw_only=True)
+class PostalAddress(ubl.Address): ...
+
+
+PostalAddressType = PostalAddress
+
+
+@dataclasses.dataclass()
+class EndpointID(ubl.CbcEntity):
+    value: str
+    schemeID: str | None = EzField(type="attribute", default=None)
+
+
+EndpointIDType = EndpointID
+
 
 @dataclasses.dataclass(kw_only=True)
 class Party(ubl.CacEntity):
     """
     Redeclared and not inheriting ubl.Party due to the need of altering the original order of the fields
     """
-    EndpointID: str = EzField("cbc")
+
+    EndpointID: EndpointIDType
     PartyIdentification: list[ubl.PartyIdentification] | None = None
     PartyName: ubl.PartyName | None = None
-    PostalAddress: ubl.Address | None = None
+    PostalAddress: PostalAddressType
     PartyTaxScheme: PartyTaxSchemeType | None = None
     PartyLegalEntity: list[PartyLegalEntityType]
     Contact: ubl.Contact | None = None

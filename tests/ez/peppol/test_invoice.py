@@ -1,5 +1,11 @@
-
-from ez.peppol._invoice import Invoice, AccountingSupplierParty, Party, PartyLegalEntity
+from ez.peppol._invoice import (
+    Invoice,
+    AccountingSupplierParty,
+    Party,
+    PartyLegalEntity,
+    PostalAddress,
+    EndpointID,
+)
 from ez.ubl._invoice import (
     InvoiceLine,
     AccountingCustomerParty,
@@ -15,9 +21,10 @@ from ez.ubl._invoice import (
     TaxAmount,
     TaxableAmount,
     Contact,
-    Address,
     Country,
+    PartyIdentification,
     Location,
+    ID,
 )
 from lxml import etree, objectify
 from pathlib import Path
@@ -37,14 +44,15 @@ def test_invoice_build_validates_against_peppol_schematron():
         BuyerReference="BUYER-REF-001",
         AccountingSupplierParty=AccountingSupplierParty(
             Party=Party(
-                EndpointID="abcd-123",
+                EndpointID=EndpointID("abcd-123", schemeID="0088"),
+                PartyIdentification=[PartyIdentification(ID=ID("abc-12345"))],
                 PartyName=PartyName(Name="Seller Ltd"),
                 Contact=Contact(
                     Name="John Doe",
                     Telephone="+44-123-456-789",
                     ElectronicMail="john@seller.com",
                 ),
-                PostalAddress=Address(
+                PostalAddress=PostalAddress(
                     StreetName="123 Main St",
                     CityName="London",
                     PostalZone="SW1A 1AA",
@@ -58,9 +66,9 @@ def test_invoice_build_validates_against_peppol_schematron():
         ),
         AccountingCustomerParty=AccountingCustomerParty(
             Party=Party(
-                EndpointID="abcd-123",
+                EndpointID=EndpointID("abcd-123", schemeID="0088"),
                 PartyName=PartyName(Name="Buyer Inc"),
-                PostalAddress=Address(
+                PostalAddress=PostalAddress(
                     CityName="Berlin",
                     PostalZone="10115",
                     Country=Country(IdentificationCode="DE"),
@@ -121,10 +129,29 @@ def test_invoice_build():
         DocumentCurrencyCode="eur",
         BuyerReference="N/A",
         AccountingSupplierParty=AccountingSupplierParty(
-            Party=Party(EndpointID="abcd-123", PartyName=PartyName(Name="Seller Co"), PartyLegalEntity=[PartyLegalEntity(RegistrationName="Seller CO")],)
+            Party=Party(
+                EndpointID=EndpointID("abcd-123", schemeID="0088"),
+                PartyIdentification=[PartyIdentification(ID=ID("abc-12345"))],
+                PartyName=PartyName(Name="Seller Co"),
+                PartyLegalEntity=[PartyLegalEntity(RegistrationName="Seller CO")],
+                PostalAddress=PostalAddress(
+                    CityName="Berlin",
+                    PostalZone="10115",
+                    Country=Country(IdentificationCode="DE"),
+                ),
+            )
         ),
         AccountingCustomerParty=AccountingCustomerParty(
-            Party=Party(EndpointID="abcd-123", PartyName=PartyName(Name="Buyer Co"), PartyLegalEntity=[PartyLegalEntity(RegistrationName="Buyer CO")],)
+            Party=Party(
+                EndpointID=EndpointID("abcd-123", schemeID="0088"),
+                PartyName=PartyName(Name="Buyer Co"),
+                PartyLegalEntity=[PartyLegalEntity(RegistrationName="Buyer CO")],
+                PostalAddress=PostalAddress(
+                    CityName="Berlin",
+                    PostalZone="10115",
+                    Country=Country(IdentificationCode="DE"),
+                ),
+            )
         ),
         TaxTotal=[
             TaxTotal(
@@ -176,10 +203,20 @@ def test_invoice_build():
   <cbc:BuyerReference>N/A</cbc:BuyerReference>
   <cac:AccountingSupplierParty>
     <cac:Party>
-      <cbc:EndpointID>abcd-123</cbc:EndpointID>
+      <cbc:EndpointID schemeID="0088">abcd-123</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID>abc-12345</cbc:ID>
+      </cac:PartyIdentification>
       <cac:PartyName>
         <cbc:Name>Seller Co</cbc:Name>
       </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:CityName>Berlin</cbc:CityName>
+        <cbc:PostalZone>10115</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DE</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>Seller CO</cbc:RegistrationName>
       </cac:PartyLegalEntity>
@@ -187,10 +224,17 @@ def test_invoice_build():
   </cac:AccountingSupplierParty>
   <cac:AccountingCustomerParty>
     <cac:Party>
-      <cbc:EndpointID>abcd-123</cbc:EndpointID>
+      <cbc:EndpointID schemeID="0088">abcd-123</cbc:EndpointID>
       <cac:PartyName>
         <cbc:Name>Buyer Co</cbc:Name>
       </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:CityName>Berlin</cbc:CityName>
+        <cbc:PostalZone>10115</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>DE</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>Buyer CO</cbc:RegistrationName>
       </cac:PartyLegalEntity>
