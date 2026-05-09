@@ -3,21 +3,28 @@ from ez.peppol._invoice import (
     AccountingSupplierParty,
     Party,
     PartyLegalEntity,
+    PartyTaxScheme,
     PostalAddress,
     EndpointID,
+    LegalMonetaryTotal,
+    TaxInclusiveAmount,
+    TaxExclusiveAmount,
+    InvoiceLine,
+    PriceAmount,
+    Price,
+    InvoicedQuantity,
+    Item,
+    ClassifiedTaxCategory,
+    TaxScheme,
 )
 from ez.ubl._invoice import (
-    InvoiceLine,
     AccountingCustomerParty,
-    LegalMonetaryTotal,
     PartyName,
     PayableAmount,
     LineExtensionAmount,
-    Item,
     TaxTotal,
     TaxSubtotal,
     TaxCategory,
-    TaxScheme,
     TaxAmount,
     TaxableAmount,
     Contact,
@@ -31,7 +38,6 @@ from pathlib import Path
 from saxonche import PySaxonProcessor
 
 
-# @pytest.mark.xfail
 def test_invoice_build_validates_against_peppol_schematron():
     """Test invoice validates against Peppol BIS 3.0 Schematron rules"""
 
@@ -39,13 +45,14 @@ def test_invoice_build_validates_against_peppol_schematron():
     invoice = Invoice(
         ID="INV-001",
         IssueDate="2024-01-15",
+        DueDate="2024-01-22",
         InvoiceTypeCode="380",
         DocumentCurrencyCode="EUR",
         BuyerReference="BUYER-REF-001",
         AccountingSupplierParty=AccountingSupplierParty(
             Party=Party(
-                EndpointID=EndpointID("abcd-123", schemeID="0088"),
-                PartyIdentification=[PartyIdentification(ID=ID("abc-12345"))],
+                EndpointID=EndpointID("1548079098355", schemeID="0088"),
+                PartyIdentification=[PartyIdentification(ID=ID("1548079098355"))],
                 PartyName=PartyName(Name="Seller Ltd"),
                 Contact=Contact(
                     Name="John Doe",
@@ -62,11 +69,14 @@ def test_invoice_build_validates_against_peppol_schematron():
                 PhysicalLocation=Location(
                     ID="123",
                 ),
+                PartyTaxScheme=PartyTaxScheme(
+                    CompanyID="GB123456789", TaxScheme=TaxScheme(ID="VAT")
+                ),
             )
         ),
         AccountingCustomerParty=AccountingCustomerParty(
             Party=Party(
-                EndpointID=EndpointID("abcd-123", schemeID="0088"),
+                EndpointID=EndpointID("1548079098355", schemeID="0088"),
                 PartyName=PartyName(Name="Buyer Inc"),
                 PostalAddress=PostalAddress(
                     CityName="Berlin",
@@ -91,7 +101,10 @@ def test_invoice_build_validates_against_peppol_schematron():
             )
         ],
         LegalMonetaryTotal=LegalMonetaryTotal(
-            PayableAmount=PayableAmount(value="120.00", currencyID="EUR")
+            LineExtensionAmount=LineExtensionAmount(value="100.00", currencyID="EUR"),
+            TaxExclusiveAmount=TaxExclusiveAmount(value="100.00", currencyID="EUR"),
+            TaxInclusiveAmount=TaxInclusiveAmount(value="120.00", currencyID="EUR"),
+            PayableAmount=PayableAmount(value="120.00", currencyID="EUR"),
         ),
         InvoiceLines=[
             InvoiceLine(
@@ -99,7 +112,13 @@ def test_invoice_build_validates_against_peppol_schematron():
                 LineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Services"),
+                Item=Item(
+                    Description="Services",
+                    Name="Services",
+                    ClassifiedTaxCategory=ClassifiedTaxCategory(ID="S", Percent="20"),
+                ),
+                InvoicedQuantity=InvoicedQuantity(value="1", unitCode="C62"),
+                Price=Price(PriceAmount=PriceAmount(value="100.00", currencyID="EUR")),
             ),
         ],
     ).build()
@@ -130,10 +149,13 @@ def test_invoice_build():
         BuyerReference="N/A",
         AccountingSupplierParty=AccountingSupplierParty(
             Party=Party(
-                EndpointID=EndpointID("abcd-123", schemeID="0088"),
-                PartyIdentification=[PartyIdentification(ID=ID("abc-12345"))],
+                EndpointID=EndpointID("1548079098355", schemeID="0088"),
+                PartyIdentification=[PartyIdentification(ID=ID("1548079098355"))],
                 PartyName=PartyName(Name="Seller Co"),
                 PartyLegalEntity=[PartyLegalEntity(RegistrationName="Seller CO")],
+                PartyTaxScheme=PartyTaxScheme(
+                    CompanyID="GB123456789", TaxScheme=TaxScheme(ID="VAT")
+                ),
                 PostalAddress=PostalAddress(
                     CityName="Berlin",
                     PostalZone="10115",
@@ -143,7 +165,7 @@ def test_invoice_build():
         ),
         AccountingCustomerParty=AccountingCustomerParty(
             Party=Party(
-                EndpointID=EndpointID("abcd-123", schemeID="0088"),
+                EndpointID=EndpointID("1548079098355", schemeID="0088"),
                 PartyName=PartyName(Name="Buyer Co"),
                 PartyLegalEntity=[PartyLegalEntity(RegistrationName="Buyer CO")],
                 PostalAddress=PostalAddress(
@@ -168,7 +190,10 @@ def test_invoice_build():
             )
         ],
         LegalMonetaryTotal=LegalMonetaryTotal(
-            PayableAmount=PayableAmount(value="120.00", currencyID="EUR")
+            LineExtensionAmount=LineExtensionAmount(value="100.00", currencyID="EUR"),
+            TaxExclusiveAmount=TaxExclusiveAmount(value="90.00", currencyID="EUR"),
+            PayableAmount=PayableAmount(value="100.00", currencyID="EUR"),
+            TaxInclusiveAmount=TaxInclusiveAmount(value="120.00", currencyID="EUR"),
         ),
         InvoiceLines=[
             InvoiceLine(
@@ -176,14 +201,26 @@ def test_invoice_build():
                 LineExtensionAmount=LineExtensionAmount(
                     value="50.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service A"),
+                Item=Item(
+                    Description="Service A",
+                    Name="Service A",
+                    ClassifiedTaxCategory=ClassifiedTaxCategory(ID="S", Percent="25"),
+                ),
+                InvoicedQuantity=InvoicedQuantity(value="1", unitCode="C62"),
+                Price=Price(PriceAmount=PriceAmount(value="50.00", currencyID="EUR")),
             ),
             InvoiceLine(
                 ID="456",
                 LineExtensionAmount=LineExtensionAmount(
                     value="50.00", currencyID="EUR"
                 ),
-                Item=Item(Description="Service B"),
+                Item=Item(
+                    Description="Service B",
+                    Name="Service B",
+                    ClassifiedTaxCategory=ClassifiedTaxCategory(ID="S", Percent="25"),
+                ),
+                InvoicedQuantity=InvoicedQuantity(value="1", unitCode="C62"),
+                Price=Price(PriceAmount=PriceAmount(value="50.00", currencyID="EUR")),
             ),
         ],
     ).build()
@@ -203,9 +240,9 @@ def test_invoice_build():
   <cbc:BuyerReference>N/A</cbc:BuyerReference>
   <cac:AccountingSupplierParty>
     <cac:Party>
-      <cbc:EndpointID schemeID="0088">abcd-123</cbc:EndpointID>
+      <cbc:EndpointID schemeID="0088">1548079098355</cbc:EndpointID>
       <cac:PartyIdentification>
-        <cbc:ID>abc-12345</cbc:ID>
+        <cbc:ID>1548079098355</cbc:ID>
       </cac:PartyIdentification>
       <cac:PartyName>
         <cbc:Name>Seller Co</cbc:Name>
@@ -217,6 +254,12 @@ def test_invoice_build():
           <cbc:IdentificationCode>DE</cbc:IdentificationCode>
         </cac:Country>
       </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>GB123456789</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>Seller CO</cbc:RegistrationName>
       </cac:PartyLegalEntity>
@@ -224,7 +267,7 @@ def test_invoice_build():
   </cac:AccountingSupplierParty>
   <cac:AccountingCustomerParty>
     <cac:Party>
-      <cbc:EndpointID schemeID="0088">abcd-123</cbc:EndpointID>
+      <cbc:EndpointID schemeID="0088">1548079098355</cbc:EndpointID>
       <cac:PartyName>
         <cbc:Name>Buyer Co</cbc:Name>
       </cac:PartyName>
@@ -255,21 +298,48 @@ def test_invoice_build():
     </cac:TaxSubtotal>
   </cac:TaxTotal>
   <cac:LegalMonetaryTotal>
-    <cbc:PayableAmount currencyID="EUR">120.00</cbc:PayableAmount>
+    <cbc:LineExtensionAmount currencyID="EUR">100.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="EUR">90.00</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="EUR">120.00</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="EUR">100.00</cbc:PayableAmount>
   </cac:LegalMonetaryTotal>
   <cac:InvoiceLine>
     <cbc:ID>123</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="C62">1</cbc:InvoicedQuantity>
     <cbc:LineExtensionAmount currencyID="EUR">50.00</cbc:LineExtensionAmount>
     <cac:Item>
       <cbc:Description>Service A</cbc:Description>
+      <cbc:Name>Service A</cbc:Name>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>25</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
     </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="EUR">50.00</cbc:PriceAmount>
+    </cac:Price>
   </cac:InvoiceLine>
   <cac:InvoiceLine>
     <cbc:ID>456</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="C62">1</cbc:InvoicedQuantity>
     <cbc:LineExtensionAmount currencyID="EUR">50.00</cbc:LineExtensionAmount>
     <cac:Item>
       <cbc:Description>Service B</cbc:Description>
+      <cbc:Name>Service B</cbc:Name>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>25</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
     </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="EUR">50.00</cbc:PriceAmount>
+    </cac:Price>
   </cac:InvoiceLine>
 </Invoice>""".strip()
     )

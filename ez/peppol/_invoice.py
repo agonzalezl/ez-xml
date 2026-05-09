@@ -66,6 +66,98 @@ class AccountingSupplierParty(ubl.AccountingSupplierParty):
     Party: Party
 
 
+@dataclasses.dataclass()
+class TaxExclusiveAmount(ubl.CbcEntity):
+    value: str
+    currencyID: str = EzField(type="attribute")
+
+
+TaxExclusiveAmountType = TaxExclusiveAmount
+
+
+@dataclasses.dataclass()
+class TaxInclusiveAmount(ubl.CbcEntity):
+    value: str
+    currencyID: str = EzField(type="attribute")
+
+
+TaxInclusiveAmountType = TaxInclusiveAmount
+
+
+@dataclasses.dataclass()
+class LegalMonetaryTotal(ubl.CacEntity):
+    LineExtensionAmount: ubl.LineExtensionAmount
+    TaxExclusiveAmount: TaxExclusiveAmountType
+    TaxInclusiveAmount: TaxInclusiveAmountType
+    PayableAmount: ubl.PayableAmount
+
+
+LegalMonetaryTotalType = LegalMonetaryTotal
+
+
+@dataclasses.dataclass()
+class InvoicedQuantity(ubl.CbcEntity):
+    value: str
+    unitCode: str = EzField(type="attribute")
+
+
+InvoicedQuantityType = InvoicedQuantity
+
+
+@dataclasses.dataclass()
+class PriceAmount(ubl.CbcEntity):
+    value: str
+    currencyID: str = EzField(type="attribute")
+
+
+PriceAmountType = PriceAmount
+
+
+@dataclasses.dataclass()
+class Price(ubl.CacEntity):
+    PriceAmount: PriceAmountType
+
+
+PriceType = Price
+
+
+@dataclasses.dataclass()
+class ClassifiedTaxCategory(ubl.CacEntity):
+    ID: str = EzField("cbc")
+    Percent: str | None = EzField("cbc", default=None)
+    TaxScheme: ubl.TaxScheme = dataclasses.field(
+        default_factory=lambda: ubl.TaxScheme(ID="VAT")
+    )
+
+
+ClassifiedTaxCategoryType = ClassifiedTaxCategory
+
+
+@dataclasses.dataclass(kw_only=True)
+class Item(ubl.Item):
+    Description: str | None = EzField("cbc", default=None)
+    Name: str = EzField("cbc")
+    ClassifiedTaxCategory: ClassifiedTaxCategoryType
+
+
+ItemType = Item
+
+
+@dataclasses.dataclass(kw_only=True)
+class InvoiceLine(ubl.CacEntity):
+    ID: str = EzField("cbc")
+    Note: str | None = EzField("cbc", default=None)
+    InvoicedQuantity: InvoicedQuantityType
+    LineExtensionAmount: ubl.LineExtensionAmount
+    DocumentReference: list[ubl.DocumentReference] | None = None
+    AllowanceCharge: list[ubl.AllowanceCharge] | None = None
+    Item: ItemType
+    Price: PriceType
+
+
+InvoiceLineType = InvoiceLine
+
+
 @dataclasses.dataclass(kw_only=True)
 class Invoice(ubl.Invoice):
     CustomizationID: str = EzField(
@@ -78,3 +170,5 @@ class Invoice(ubl.Invoice):
     # BuyerReference is mandatory in Peppol BIS 3.0 (see DE-R-015)
     BuyerReference: str = EzField("cbc")
     AccountingSupplierParty: AccountingSupplierParty
+    LegalMonetaryTotal: LegalMonetaryTotalType
+    InvoiceLines: list[InvoiceLine]
