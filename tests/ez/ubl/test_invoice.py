@@ -22,6 +22,7 @@ from ez.ubl._invoice import (
     Country,
     Delivery,
     AllowanceCharge,
+    ID,
 )
 from lxml import etree
 from pathlib import Path
@@ -51,8 +52,8 @@ def test_invoice_build():
                 TaxAmount=TaxAmount(value="20.00", currencyID="EUR"),
                 TaxSubtotal=[
                     TaxSubtotal(
-                        taxableAmount=TaxableAmount(value="100.00", currencyID="EUR"),
-                        taxAmount=TaxAmount(value="20.00", currencyID="EUR"),
+                        TaxableAmount=TaxableAmount(value="100.00", currencyID="EUR"),
+                        TaxAmount=TaxAmount(value="20.00", currencyID="EUR"),
                         TaxCategory=TaxCategory(
                             ID="S", Percent="20", TaxScheme=TaxScheme(ID="VAT")
                         ),
@@ -66,17 +67,17 @@ def test_invoice_build():
         InvoiceLines=[
             InvoiceLine(
                 ID="123",
-                lineExtensionAmount=LineExtensionAmount(
+                LineExtensionAmount=LineExtensionAmount(
                     value="50.00", currencyID="EUR"
                 ),
-                item=Item(Description="Service A"),
+                Item=Item(Description="Service A"),
             ),
             InvoiceLine(
                 ID="456",
-                lineExtensionAmount=LineExtensionAmount(
+                LineExtensionAmount=LineExtensionAmount(
                     value="50.00", currencyID="EUR"
                 ),
-                item=Item(Description="Service B"),
+                Item=Item(Description="Service B"),
             ),
         ],
     ).build()
@@ -114,8 +115,8 @@ def test_invoice_build_withParty_details():
             Party=Party(
                 PartyName=PartyName(Name="ACME Corp"),
                 PartyIdentification=[
-                    PartyIdentification(ID="12345678", schemeID="VAT"),
-                    PartyIdentification(ID="US123456", schemeID="EIN"),
+                    PartyIdentification(ID=ID("12345678", schemeID="VAT")),
+                    PartyIdentification(ID=ID("US123456", schemeID="EIN")),
                 ],
                 Contact=Contact(
                     Name="John Doe",
@@ -135,7 +136,7 @@ def test_invoice_build_withParty_details():
             Party=Party(
                 PartyName=PartyName(Name="Client Inc"),
                 PartyIdentification=[
-                    PartyIdentification(ID="87654321", schemeID="VAT"),
+                    PartyIdentification(ID=ID("87654321", schemeID="VAT")),
                 ],
             )
         ),
@@ -145,10 +146,10 @@ def test_invoice_build_withParty_details():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                lineExtensionAmount=LineExtensionAmount(
+                LineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                item=Item(Description="Service"),
+                Item=Item(Description="Service"),
             )
         ],
     ).build()
@@ -189,10 +190,10 @@ def test_invoice_build_with_delivery():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                lineExtensionAmount=LineExtensionAmount(
+                LineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                item=Item(Description="Service"),
+                Item=Item(Description="Service"),
             )
         ],
     ).build()
@@ -226,10 +227,10 @@ def test_invoice_build_with_allowanceCharge():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                lineExtensionAmount=LineExtensionAmount(
+                LineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                item=Item(Description="Service"),
+                Item=Item(Description="Service"),
             )
         ],
     ).build()
@@ -263,10 +264,10 @@ def test_invoice_build_validates_against_ubl_xsd():
         InvoiceLines=[
             InvoiceLine(
                 ID="1",
-                lineExtensionAmount=LineExtensionAmount(
+                LineExtensionAmount=LineExtensionAmount(
                     value="100.00", currencyID="EUR"
                 ),
-                item=Item(Description="Service"),
+                Item=Item(Description="Service"),
             )
         ],
     ).build()
