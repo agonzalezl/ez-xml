@@ -47,6 +47,7 @@ from ._invoice import (
     TaxRepresentativeParty,
     CacEntity,
     CbcEntity,
+    ID,
 )
 
 __all__ = [
@@ -98,4 +99,5 @@ __all__ = [
     "TaxRepresentativeParty",
     "CacEntity",
     "CbcEntity",
+    "ID",
 ]
