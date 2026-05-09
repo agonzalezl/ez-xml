@@ -5,10 +5,10 @@ from ez.peppol._invoice import (
     EndpointID,
     EndpointIDType,
     Invoice,
-    InvoiceLine,
-    InvoiceLineType,
     InvoicedQuantity,
     InvoicedQuantityType,
+    InvoiceLine,
+    InvoiceLineType,
     Item,
     ItemType,
     LegalMonetaryTotal,
@@ -31,22 +31,21 @@ from ez.peppol._invoice import (
     TaxScheme,
     TaxSchemeType,
 )
-
 from ez.ubl import (
+    ID,
     AccountingCustomerParty,
     Contact,
     Country,
-    ID,
     LineExtensionAmount,
     Location,
     PartyIdentification,
     PartyName,
     PayableAmount,
+    TaxableAmount,
     TaxAmount,
     TaxCategory,
     TaxSubtotal,
     TaxTotal,
-    TaxableAmount,
 )
 
 __all__ = [

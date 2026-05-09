@@ -1,5 +1,7 @@
 import dataclasses
-from ez.xml.model import EzXMLModel, EzField
+
+from ez.xml.model import EzField, EzXMLModel
+
 from ._constants import NS_MAP
 
 

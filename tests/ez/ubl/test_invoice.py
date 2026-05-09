@@ -1,31 +1,33 @@
+from pathlib import Path
+
+from lxml import etree
+
 from ez.ubl._invoice import (
-    Invoice,
-    InvoiceLine,
-    OrderReference,
-    AccountingSupplierParty,
+    ID,
     AccountingCustomerParty,
-    LegalMonetaryTotal,
-    Party,
-    PartyName,
-    PayableAmount,
-    LineExtensionAmount,
-    Item,
-    TaxTotal,
-    TaxSubtotal,
-    TaxCategory,
-    TaxScheme,
-    TaxAmount,
-    TaxableAmount,
-    PartyIdentification,
-    Contact,
+    AccountingSupplierParty,
     Address,
+    AllowanceCharge,
+    Contact,
     Country,
     Delivery,
-    AllowanceCharge,
-    ID,
+    Invoice,
+    InvoiceLine,
+    Item,
+    LegalMonetaryTotal,
+    LineExtensionAmount,
+    OrderReference,
+    Party,
+    PartyIdentification,
+    PartyName,
+    PayableAmount,
+    TaxableAmount,
+    TaxAmount,
+    TaxCategory,
+    TaxScheme,
+    TaxSubtotal,
+    TaxTotal,
 )
-from lxml import etree
-from pathlib import Path
 
 
 def test_invoice_build():
@@ -272,8 +274,10 @@ def test_invoice_build_validates_against_ubl_xsd():
         ],
     ).build()
 
-    # We do this to avoid the following error. Assigning Invoice to the proper namespace should fix the issue
-    # Element 'Invoice': No matching global declaration available for the validation root.
+    # We do this to avoid the following error. Assigning Invoice to the proper namespace
+    # should fix the issue
+    # Element 'Invoice': No matching global declaration available for the validation
+    # root
     xml_str = etree.tostring(invoice, encoding="unicode")
     invoice = etree.fromstring(xml_str)
     schema.assertValid(invoice)

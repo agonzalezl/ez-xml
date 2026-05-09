@@ -1,14 +1,19 @@
+from pathlib import Path
+
+from lxml import etree, objectify
+from saxonche import PySaxonProcessor
+
 from ez.peppol import (
+    ID,
     AccountingCustomerParty,
     AccountingSupplierParty,
     ClassifiedTaxCategory,
     Contact,
     Country,
     EndpointID,
-    ID,
     Invoice,
-    InvoiceLine,
     InvoicedQuantity,
+    InvoiceLine,
     Item,
     LegalMonetaryTotal,
     LineExtensionAmount,
@@ -22,6 +27,7 @@ from ez.peppol import (
     PostalAddress,
     Price,
     PriceAmount,
+    TaxableAmount,
     TaxAmount,
     TaxCategory,
     TaxExclusiveAmount,
@@ -29,11 +35,7 @@ from ez.peppol import (
     TaxScheme,
     TaxSubtotal,
     TaxTotal,
-    TaxableAmount,
 )
-from lxml import etree, objectify
-from pathlib import Path
-from saxonche import PySaxonProcessor
 
 
 def test_invoice_build_validates_against_peppol_schematron():

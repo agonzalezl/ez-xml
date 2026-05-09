@@ -1,9 +1,11 @@
 from __future__ import annotations
-from lxml.builder import ElementMaker
+
 import dataclasses
-from typing import Any, ClassVar, get_args, get_origin, get_type_hints
 from types import UnionType
+from typing import Any, ClassVar, get_args, get_origin, get_type_hints
+
 import lxml.etree
+from lxml.builder import ElementMaker
 
 
 def nsmap(nsmap):
@@ -64,10 +66,8 @@ class EzXMLModel:
                 attributes[field.name] = str(value)
             else:
                 sub_ns = field.metadata.get("_ns", None) if field.metadata else None
-                if ns := (nsmap or {}).get(sub_ns):
-                    sub_ns = "{" + ns + "}"
-                else:
-                    sub_ns = ""
+                sub_ns = "{" + ns + "}" if (ns := (nsmap or {}).get(sub_ns)) else ""
+
                 children.append(getattr(E, sub_ns + field.name)(str(value)))
 
         _ns_key = getattr(self, "_ns", None)

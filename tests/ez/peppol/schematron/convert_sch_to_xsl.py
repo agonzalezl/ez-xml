@@ -1,9 +1,10 @@
 """Convert Peppol Schematron .sch files to .xsl using ISO Schematron XSLT pipeline"""
 
-from saxonche import PySaxonProcessor
-from pathlib import Path
-import tempfile
 import os
+import tempfile
+from pathlib import Path
+
+from saxonche import PySaxonProcessor
 
 
 def convert_sch_to_xsl(sch_file, xsl_file):

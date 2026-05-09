@@ -1,8 +1,10 @@
 from __future__ import annotations
-from lxml.builder import ElementMaker
-import lxml.etree
-from typing import Any, ClassVar, get_args, get_origin
+
 from types import UnionType
+from typing import Any, ClassVar, get_args, get_origin
+
+import lxml.etree
+from lxml.builder import ElementMaker
 from pydantic import BaseModel, Field
 
 
@@ -67,14 +69,14 @@ class PydanticEzXMLModel(BaseModel):
                 if args:
                     item_type = _cleanup_field_type(args[0])
                     if isinstance(item_type, type) and issubclass(
-                        item_type, (PydanticEzXMLModel,)
+                        item_type, PydanticEzXMLModel
                     ):
                         for item in value:
                             children.append(item.build(nsmap))
                         continue
 
             if isinstance(field_type, type) and issubclass(
-                field_type, (PydanticEzXMLModel,)
+                field_type, PydanticEzXMLModel
             ):
                 children.append(value.build(nsmap))
             elif field_name == "value":

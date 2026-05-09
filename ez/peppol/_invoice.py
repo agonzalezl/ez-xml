@@ -1,6 +1,6 @@
-from ez import ubl
-
 import dataclasses
+
+from ez import ubl
 from ez.xml.model import EzField
 
 
@@ -48,7 +48,8 @@ EndpointIDType = EndpointID
 @dataclasses.dataclass(kw_only=True)
 class Party(ubl.CacEntity):
     """
-    Redeclared and not inheriting ubl.Party due to the need of altering the original order of the fields
+    Redeclared and not inheriting ubl.Party due to the need of altering the original
+    order of the fields
     """
 
     EndpointID: EndpointIDType

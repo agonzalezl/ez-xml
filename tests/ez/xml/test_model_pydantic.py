@@ -1,6 +1,6 @@
 from lxml import etree
 
-from ez.xml.model_pydantic import PydanticEzXMLModel, EzField
+from ez.xml.model_pydantic import EzField, PydanticEzXMLModel
 
 
 class Province(PydanticEzXMLModel):

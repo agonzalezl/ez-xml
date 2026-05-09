@@ -2,7 +2,7 @@ import dataclasses
 
 from lxml import etree
 
-from ez.xml import EzXMLModel, nsmap, EzField
+from ez.xml import EzField, EzXMLModel, nsmap
 
 
 @dataclasses.dataclass()
